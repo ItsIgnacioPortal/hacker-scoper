@@ -454,9 +454,6 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 								}
 							}
 
-							//add protocol
-							scope = "http://" + scope
-
 							parseScopesWrapper(scope, explicitLevel, targetsListFilepath)
 
 						}
