@@ -607,7 +607,7 @@ func parseScopes(scope string, targetsListFilepath string, isWilcard bool) {
 	_, CIDR, _ = net.ParseCIDR(scope)
 	scopeIP := net.ParseIP(scope)
 	//if we can parse the scope as a CIDR range or as an IP address:
-	if scopeIP.String() != "" || CIDR != nil {
+	if scopeIP.String() != "<nil>" || CIDR != nil {
 		parseAsIP = true
 	} else {
 		parseAsIP = false
