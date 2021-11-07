@@ -477,7 +477,7 @@ func main() {
 				scopesScanner := bufio.NewScanner(scopesFile)
 
 				for scopesScanner.Scan() {
-					parseScopesWrapper("http://"+scopesScanner.Text(), explicitLevel, targetsListFilepath)
+					parseScopesWrapper(scopesScanner.Text(), explicitLevel, targetsListFilepath)
 				}
 				scopesFile.Close()
 
@@ -591,98 +591,109 @@ func updateFireBountyJSON() {
 // 192.168.0.1/24
 func parseScopes(scope string, targetsListFilepath string, isWilcard bool) {
 
-	//if we can parse the scope as a URL...
-	if scopeURL, err := url.Parse(scope); err == nil {
+	schemedScope := "http://" + scope
 
-		//open the user-supplied URL list
-		file, err := os.Open(targetsListFilepath)
-		if err != nil {
-			crash("Could not open your provided URL list file", err)
-		}
+	var CIDR *net.IPNet
+	var parseAsIP bool
+	var scopeURL *url.URL
+	var err error
 
-		//Read the URLs file line per line
-		//scan using bufio
-		scanner := bufio.NewScanner(file)
-
-		for scanner.Scan() {
-			var currentTargetURL *url.URL
-			currentTargetURL, err = url.Parse(scanner.Text())
-			//if it fails...
-			if (err != nil || currentTargetURL.Host == "") && !chainMode {
-				fmt.Println("[WARNING]: Couldn't parse " + scanner.Text() + " as a valid URL. Probably because it doesn't have a valid scheme (\"http://\" for example).")
-			} else {
-
-				//remove port from the host and store it in a temporary variable, just in case we get an IP with a port which would cuase the IP parsing to fail.
-				portlessHostofCurrentTarget := removePortFromHost(currentTargetURL)
-				portlessHostofCurrentScope := removePortFromHost(scopeURL)
-				fmt.Println("TARGET: " + portlessHostofCurrentTarget)
-				fmt.Println("SCOPE: " + portlessHostofCurrentScope)
-
-				targetIp := net.ParseIP(portlessHostofCurrentTarget)
-				//if we can parse the current line as an IP address...
-				if targetIp != nil {
-
-					//fail. skip line
-					if !chainMode {
-						fmt.Println("[WARNING]: We do not support IP addresses at the moment. address skipped.")
-					}
-
-					//TODO: Support IP addresses
-					var CIDR *net.IPNet
-					_, CIDR, err = net.ParseCIDR(scope)
-					if err != nil {
-						fmt.Println("Couldn't parse as CIDR, retry as equality match")
-
-						scopeIP := net.ParseIP(portlessHostofCurrentScope)
-						if targetIp.String() == scopeIP.String() {
-
-							fmt.Println("[+] IN-SCOPE: " + targetIp.String())
-						}
-					} else {
-						if CIDR.Contains(targetIp) {
-							if !chainMode {
-								fmt.Println("[+] IN-SCOPE: " + targetIp.String())
-							} else {
-								fmt.Println(targetIp.String())
-							}
-						}
-					}
-
-				} else {
-					if isWilcard {
-
-						//if x is a subdomain of y
-						//ex: wordpress.example.com with a scope of *.example.com will give a match
-						//we DON'T do it by splitting on dots and matching, because that would cause errors with domains that have two top-level-domains (gov.br for example)
-						if strings.HasSuffix(currentTargetURL.Host, scopeURL.Host) {
-							if !chainMode {
-								fmt.Println("[+] IN-SCOPE: " + scanner.Text())
-							} else {
-								fmt.Println(scanner.Text())
-							}
-
-						}
-					} else {
-						if currentTargetURL.Host == scopeURL.Host {
-							if !chainMode {
-								fmt.Println("[+] IN-SCOPE: " + scanner.Text())
-							} else {
-								fmt.Println(scanner.Text())
-							}
-
-						}
-					}
-
-				}
-			}
-
-		}
-		if err := scanner.Err(); err != nil {
-			crash("Could not read URL List file successfully", err)
-		}
+	//attempt to parse current scope as a CIDR range
+	_, CIDR, _ = net.ParseCIDR(scope)
+	scopeIP := net.ParseIP(scope)
+	//if we can parse the scope as a CIDR range or as an IP address:
+	if scopeIP.String() != "" || CIDR != nil {
+		parseAsIP = true
 	} else {
-		//the scope is not a URL, so it must be an IP address
+		parseAsIP = false
+		scopeURL, err = url.Parse(schemedScope)
+		if err != nil {
+			if !chainMode {
+				fmt.Println("[WARNING]: Couldn't parse " + scope + " as a valid URL. Probably because it doesn't have a valid scheme (\"http://\" for example")
+			}
+			return
+		}
+	}
 
+	//open the user-supplied URL list
+	file, err := os.Open(targetsListFilepath)
+	if err != nil {
+		crash("Could not open your provided URL list file", err)
+	}
+
+	//Read the URLs file line per line
+	//scan using bufio
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+		//attempt to parse current target as an IP
+		var currentTargetURL *url.URL
+		currentTargetURL, err = url.Parse(scanner.Text())
+		portlessHostofCurrentTarget := removePortFromHost(currentTargetURL)
+		targetIp := net.ParseIP(portlessHostofCurrentTarget)
+
+		//if it fails...
+		if (err != nil || currentTargetURL.Host == "") && !chainMode {
+			fmt.Println("[WARNING]: Couldn't parse " + scanner.Text() + " as a valid URL. Probably because it doesn't have a valid scheme (\"http://\" for example).")
+		} else {
+			//we were able to parse the target as a URL
+			//if we were able to parse the target as an IP, and the scope as an IP or CIDR range
+			if targetIp.String() != "" && parseAsIP {
+				//if the CIDR range is empty
+				if CIDR == nil {
+					//Couldn't parse scope as CIDR range, retrying as ip match")
+					if targetIp.String() == scopeIP.String() {
+						if !chainMode {
+							fmt.Println("[+] IN-SCOPE: " + targetIp.String())
+						} else {
+							fmt.Println(targetIp.String())
+						}
+
+					}
+				} else {
+					if CIDR.Contains(targetIp) {
+						if !chainMode {
+							fmt.Println("[+] IN-SCOPE: " + targetIp.String())
+						} else {
+							fmt.Println(targetIp.String())
+						}
+					}
+				}
+
+			} else {
+				//parse the scope & target as URLs
+
+				if isWilcard {
+					//parse the scope as a URL
+
+					//if x is a subdomain of y
+					//ex: wordpress.example.com with a scope of *.example.com will give a match
+					//we DON'T do it by splitting on dots and matching, because that would cause errors with domains that have two top-level-domains (gov.br for example)
+					if strings.HasSuffix(currentTargetURL.Host, scopeURL.Host) {
+						if !chainMode {
+							fmt.Println("[+] IN-SCOPE: " + scanner.Text())
+						} else {
+							fmt.Println(scanner.Text())
+						}
+
+					}
+				} else {
+					if currentTargetURL.Host == scopeURL.Host {
+						if !chainMode {
+							fmt.Println("[+] IN-SCOPE: " + scanner.Text())
+						} else {
+							fmt.Println(scanner.Text())
+						}
+
+					}
+				}
+
+			}
+		}
+
+	}
+	if err := scanner.Err(); err != nil {
+		crash("Could not read URL List file successfully", err)
 	}
 }
 
@@ -713,5 +724,7 @@ func crash(message string, err error) {
 func removePortFromHost(url *url.URL) string {
 	//code readability > efficiency
 	portless := strings.Replace(string(url.Host), string(url.Port()), "", 1)
+	//obligatory cleanup ("192.168.1.1:" -> "192.168.1.1")
+	portless = strings.Replace(portless, ":", "", 1)
 	return portless
 }
