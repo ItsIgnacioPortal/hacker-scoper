@@ -591,99 +591,98 @@ func updateFireBountyJSON() {
 // 192.168.0.1/24
 func parseScopes(scope string, targetsListFilepath string, isWilcard bool) {
 
-	var CIDR *net.IPNet
-	var parseAsIP bool
-	var scopeURL *url.URL
+	//if we can parse the scope as a URL...
+	if scopeURL, err := url.Parse(scope); err == nil {
 
-	//attempt to parse current scope as a CIDR range
-	scopeIP, CIDR, err := net.ParseCIDR(scope)
-	//if we can parse the scope as a CIDR range or as an IP address:
-	if err == nil && (scopeIP.String() != "" || CIDR.IP.String() != "") {
-		parseAsIP = true
-	} else {
-		scopeURL, err = url.Parse(scope)
+		//open the user-supplied URL list
+		file, err := os.Open(targetsListFilepath)
 		if err != nil {
-			if !chainMode {
-				fmt.Println("[WARNING]: Couldn't parse " + scope + " as a valid URL. Probably because it doesn't have a valid scheme (\"http://\" for example")
-			}
-			return
+			crash("Could not open your provided URL list file", err)
 		}
-	}
 
-	//open the user-supplied URL list
-	file, err := os.Open(targetsListFilepath)
-	if err != nil {
-		crash("Could not open your provided URL list file", err)
-	}
+		//Read the URLs file line per line
+		//scan using bufio
+		scanner := bufio.NewScanner(file)
 
-	//Read the URLs file line per line
-	//scan using bufio
-	scanner := bufio.NewScanner(file)
-
-	for scanner.Scan() {
-		//attempt to parse current target as an IP
-		var currentTargetURL *url.URL
-		currentTargetURL, err = url.Parse(scanner.Text())
-		portlessHostofCurrentTarget := removePortFromHost(currentTargetURL)
-		targetIp := net.ParseIP(portlessHostofCurrentTarget)
-
-		//if it fails...
-		if (err != nil || currentTargetURL.Host == "") && !chainMode {
-			fmt.Println("[WARNING]: Couldn't parse " + scanner.Text() + " as a valid URL. Probably because it doesn't have a valid scheme (\"http://\" for example).")
-		} else {
-			//we were able to parse the target as a URL
-			//if we were able to parse the target AND the scope as an IP
-			if targetIp.String() != "" && parseAsIP {
-				//if the CIDR range is empty
-				if CIDR.IP.String() == "" {
-					fmt.Println("Couldn't parse as CIDR, retry as equality match")
-					if targetIp.String() == scopeIP.String() {
-						fmt.Println("[+] IN-SCOPE: " + targetIp.String())
-					}
-				} else {
-					if CIDR.Contains(targetIp) {
-						if !chainMode {
-							fmt.Println("[+] IN-SCOPE: " + targetIp.String())
-						} else {
-							fmt.Println(targetIp.String())
-						}
-					}
-				}
-
+		for scanner.Scan() {
+			var currentTargetURL *url.URL
+			currentTargetURL, err = url.Parse(scanner.Text())
+			//if it fails...
+			if (err != nil || currentTargetURL.Host == "") && !chainMode {
+				fmt.Println("[WARNING]: Couldn't parse " + scanner.Text() + " as a valid URL. Probably because it doesn't have a valid scheme (\"http://\" for example).")
 			} else {
-				//parse the scope & target as URLs
 
-				if isWilcard {
-					//parse the scope as a URL
+				//remove port from the host and store it in a temporary variable, just in case we get an IP with a port which would cuase the IP parsing to fail.
+				portlessHostofCurrentTarget := removePortFromHost(currentTargetURL)
+				portlessHostofCurrentScope := removePortFromHost(scopeURL)
+				fmt.Println("TARGET: " + portlessHostofCurrentTarget)
+				fmt.Println("SCOPE: " + portlessHostofCurrentScope)
 
-					//if x is a subdomain of y
-					//ex: wordpress.example.com with a scope of *.example.com will give a match
-					//we DON'T do it by splitting on dots and matching, because that would cause errors with domains that have two top-level-domains (gov.br for example)
-					if strings.HasSuffix(currentTargetURL.Host, scopeURL.Host) {
-						if !chainMode {
-							fmt.Println("[+] IN-SCOPE: " + scanner.Text())
-						} else {
-							fmt.Println(scanner.Text())
-						}
+				targetIp := net.ParseIP(portlessHostofCurrentTarget)
+				//if we can parse the current line as an IP address...
+				if targetIp != nil {
 
+					//fail. skip line
+					if !chainMode {
+						fmt.Println("[WARNING]: We do not support IP addresses at the moment. address skipped.")
 					}
+
+					//TODO: Support IP addresses
+					var CIDR *net.IPNet
+					_, CIDR, err = net.ParseCIDR(scope)
+					if err != nil {
+						fmt.Println("Couldn't parse as CIDR, retry as equality match")
+
+						scopeIP := net.ParseIP(portlessHostofCurrentScope)
+						if targetIp.String() == scopeIP.String() {
+
+							fmt.Println("[+] IN-SCOPE: " + targetIp.String())
+						}
+					} else {
+						if CIDR.Contains(targetIp) {
+							if !chainMode {
+								fmt.Println("[+] IN-SCOPE: " + targetIp.String())
+							} else {
+								fmt.Println(targetIp.String())
+							}
+						}
+					}
+
 				} else {
-					if currentTargetURL.Host == scopeURL.Host {
-						if !chainMode {
-							fmt.Println("[+] IN-SCOPE: " + scanner.Text())
-						} else {
-							fmt.Println(scanner.Text())
+					if isWilcard {
+
+						//if x is a subdomain of y
+						//ex: wordpress.example.com with a scope of *.example.com will give a match
+						//we DON'T do it by splitting on dots and matching, because that would cause errors with domains that have two top-level-domains (gov.br for example)
+						if strings.HasSuffix(currentTargetURL.Host, scopeURL.Host) {
+							if !chainMode {
+								fmt.Println("[+] IN-SCOPE: " + scanner.Text())
+							} else {
+								fmt.Println(scanner.Text())
+							}
+
 						}
+					} else {
+						if currentTargetURL.Host == scopeURL.Host {
+							if !chainMode {
+								fmt.Println("[+] IN-SCOPE: " + scanner.Text())
+							} else {
+								fmt.Println(scanner.Text())
+							}
 
+						}
 					}
+
 				}
-
 			}
-		}
 
-	}
-	if err := scanner.Err(); err != nil {
-		crash("Could not read URL List file successfully", err)
+		}
+		if err := scanner.Err(); err != nil {
+			crash("Could not read URL List file successfully", err)
+		}
+	} else {
+		//the scope is not a URL, so it must be an IP address
+
 	}
 }
 
