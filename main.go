@@ -644,18 +644,18 @@ func parseScopes(scope string, targetsListFilepath string, isWilcard bool) {
 					//Couldn't parse scope as CIDR range, retrying as ip match")
 					if targetIp.String() == scopeIP.String() {
 						if !chainMode {
-							fmt.Println("[+] IN-SCOPE: " + targetIp.String())
+							fmt.Println("[+] IN-SCOPE: " + scanner.Text())
 						} else {
-							fmt.Println(targetIp.String())
+							fmt.Println(scanner.Text())
 						}
 
 					}
 				} else {
 					if CIDR.Contains(targetIp) {
 						if !chainMode {
-							fmt.Println("[+] IN-SCOPE: " + targetIp.String())
+							fmt.Println("[+] IN-SCOPE: " + scanner.Text())
 						} else {
-							fmt.Println(targetIp.String())
+							fmt.Println(scanner.Text())
 						}
 					}
 				}
