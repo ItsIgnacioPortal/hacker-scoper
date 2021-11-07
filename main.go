@@ -361,7 +361,7 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 
 	}
 
-	if company == "" {
+	if company == "" && scopesListFilepath == "" {
 		panic("A company name is required to smartly weed-out out-of-scope URLs")
 	} else {
 
