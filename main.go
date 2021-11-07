@@ -674,7 +674,7 @@ func parseScopes(scope string, targetsListFilepath string, isWilcard bool) {
 					//if x is a subdomain of y
 					//ex: wordpress.example.com with a scope of *.example.com will give a match
 					//we DON'T do it by splitting on dots and matching, because that would cause errors with domains that have two top-level-domains (gov.br for example)
-					if strings.HasSuffix(currentTargetURL.Host, scopeURL.Host) {
+					if strings.HasSuffix(removePortFromHost(currentTargetURL), scopeURL.Host) {
 						if !chainMode {
 							fmt.Println("[+] IN-SCOPE: " + scanner.Text())
 						} else {
@@ -683,7 +683,7 @@ func parseScopes(scope string, targetsListFilepath string, isWilcard bool) {
 
 					}
 				} else {
-					if currentTargetURL.Host == scopeURL.Host {
+					if removePortFromHost(currentTargetURL) == scopeURL.Host {
 						if !chainMode {
 							fmt.Println("[+] IN-SCOPE: " + scanner.Text())
 						} else {
