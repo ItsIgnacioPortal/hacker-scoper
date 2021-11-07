@@ -440,6 +440,9 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 				fcompany := strings.ToLower(firebountyJSON.Pgms[companyCounter].Name)
 				if strings.Contains(fcompany, company) {
 					//match found!
+					if !chainMode {
+						fmt.Println("Company: " + fcompany)
+					}
 					//for every scope in the program
 					for scopeCounter := 0; scopeCounter < len(firebountyJSON.Pgms[companyCounter].Scopes.In_scopes); scopeCounter++ {
 						//if the scope type is "web_application" and it's not empty
