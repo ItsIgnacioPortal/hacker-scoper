@@ -1,0 +1,3 @@
+http://deeznuts:pazzw0rd@example.com/.well-known/security.txt
+https://192.168.0.69:8080/yommama/.well-known/security.txt
+https://www.bbc.com/.well-known/security.txt
