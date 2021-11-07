@@ -62,38 +62,40 @@ func main() {
 		fmt.Println(arg)
 	*/
 
-	const usage = `Usage: ./hacker-scoper -c company -f /path/to/file [-cstxt]
+	const usage = `Usage: ./hacker-scoper --file /path/to/targets [--company company | --custom-scopes-file /path/to/scopes] [--explicit-level INT] [--reuse Y/N] [--chain-mode]
+Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company google --explicit-level 2
   -c, --company string
       Specify the company name to lookup.
 
-  [-cstxt, --check-security-txt]
+  -cstxt, --check-security-txt
       Whether or not we will try to scrape security.txt from all domains and subdomains
 
-  [-r, --reuse] string
+  -r, --reuse string
       Reuse previously generated security.txt lists? (Y/N)
+	  Only needed if using "-cstxt"
 
   -f, --file string
       Path to your file containing URLs
 
-  [-csf, --custom-scopes-file] string
+  -csf, --custom-scopes-file string
       Path to a custom plaintext file containing scopes
 	    Default: false
 
-  [-e, --explicit-level] int
+  -e, --explicit-level int
       How explicit we expect the scopes to be:
        1 (default): Include subdomains in the scope even if there's not a wildcard in the scope
        2: Include subdomains in the scope only if there's a wildcard in the scope
        3: Include subdomains in the scope only if they are explicitly within the scope 
 
-  [-ch, --chain-mode]
+  -ch, --chain-mode
       In "chain-mode" we only output the important information. No decorations.
 	    Default: false
 	
   NOTE: Targets won't be matched if they don't have a valid scheme:
     ✅ http://target.com
-	✅ mongodb://127.0.0.1
-	❌ target.com
-	❌ 127.0.0.1
+    ✅ mongodb://127.0.0.1
+    ❌ target.com
+    ❌ 127.0.0.1
 `
 
 	flag.StringVar(&company, "c", "", "Specify the company name to lookup.")
