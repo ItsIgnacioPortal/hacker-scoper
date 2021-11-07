@@ -26,11 +26,14 @@ const firebountyJSONFilename = "firebounty-scope-url_only.json"
 var chainMode bool
 var targetsListFilepath string
 
+const colorReset = "\033[0m"
+const colorYellow = "\033[33m"
+const colorRed = "\033[31m"
+
 func main() {
 
 	var company string
 	var stxt bool
-
 	var reuseList string  //should only be "Y", "N" or ""
 	var explicitLevel int //should only be [0], 1, or 2
 	var scopesListFilepath string
@@ -122,7 +125,6 @@ func main() {
 `
 
 	if !chainMode {
-		//TODO: Colourful banner
 		fmt.Println(banner)
 	}
 
@@ -138,9 +140,10 @@ func main() {
 			if explicitLevel == 2 {
 				howMany = "Some"
 			} else {
+				//explicitLevel = 1
 				howMany = "A lot of"
 			}
-			fmt.Println("[WARNING]: " + howMany + " scopes might appear as duplicates if they are explicitly in the scope, and also covered by a wildcard. Consider running uniq on the output file.")
+			warning("(--explicit-level=" + strconv.Itoa(explicitLevel) + ") " + howMany + " scopes might appear as duplicates if they are explicitly in the scope, and also covered by a wildcard. Consider running uniq on the output file.")
 		}
 	}
 
@@ -445,7 +448,7 @@ func main() {
 							if !chainMode {
 								//alert the user about potentially mis-configured bug-bounty program
 								if scope[0:4] == "com." || scope[0:4] == "org." {
-									fmt.Println("[WARNING]: Scope starting with \".com\" or \".org found. This may be a sign of a misconfigured bug bounty program. Consider editing the \"" + firebountyJSONFilename + " file and removing the faulty entries. Also, report the failure to the mainters of the bug bounty program.")
+									warning("Scope starting with \"com.\" or \"org. found. This may be a sign of a misconfigured bug bounty program. Consider editing the \"" + firebountyJSONFilename + " file and removing the faulty entries. Also, report the failure to the mainters of the bug bounty program.")
 								}
 							}
 
@@ -609,7 +612,7 @@ func parseScopes(scope string, targetsListFilepath string, isWilcard bool) {
 		scopeURL, err = url.Parse(schemedScope)
 		if err != nil {
 			if !chainMode {
-				fmt.Println("[WARNING]: Couldn't parse " + scope + " as a valid URL. Probably because it doesn't have a valid scheme (\"http://\" for example")
+				warning("Couldn't parse " + scope + " as a valid URL. Probably because it doesn't have a valid scheme (\"http://\" for example")
 			}
 			return
 		}
@@ -634,7 +637,7 @@ func parseScopes(scope string, targetsListFilepath string, isWilcard bool) {
 
 		//if it fails...
 		if (err != nil || currentTargetURL.Host == "") && !chainMode {
-			fmt.Println("[WARNING]: Couldn't parse " + scanner.Text() + " as a valid URL. Probably because it doesn't have a valid scheme (\"http://\" for example).")
+			warning("Couldn't parse " + scanner.Text() + " as a valid URL. Probably because it doesn't have a valid scheme (\"http://\" for example).")
 		} else {
 			//we were able to parse the target as a URL
 			//if we were able to parse the target as an IP, and the scope as an IP or CIDR range
@@ -717,8 +720,12 @@ func parseScopesWrapper(scope string, explicitLevel int, targetsListFilepath str
 }
 
 func crash(message string, err error) {
-	fmt.Print("[ERROR]: " + message)
+	fmt.Print(string(colorRed) + "[ERROR]: " + message + string(colorReset) + "\n")
 	panic(err)
+}
+
+func warning(message string) {
+	fmt.Print(string(colorYellow) + "[WARNING]: " + message + string(colorReset) + "\n")
 }
 
 func removePortFromHost(url *url.URL) string {
