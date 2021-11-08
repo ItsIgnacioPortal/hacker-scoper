@@ -38,22 +38,6 @@ func main() {
 	var explicitLevel int //should only be [0], 1, or 2
 	var scopesListFilepath string
 
-	/*
-		//const API_ALL_SCOPES_URL = "https://firebounty.com/api/v1/scope/all/url_only/"
-		const PULIC_SUFFIX_LIST_URL = "https://publicsuffix.org/list/public_suffix_list.dat"
-
-		//https://groups.google.com/g/golang-nuts/c/VDaHVzu-D4E
-		//var SECURITY_TXT_PATHS [2]string = [2]string{"/.well-known/security.txt", "/security.txt"}
-		//const SECURITY_TXT_CACHE_DURATION = 1000 * 60 * 60 * 24
-
-		//TODO: Use these regexes to detect package names
-		const ANDROID_APP_REGEX = "/^[a-z0-9]+\\.([a-z0-9]+\\.)*[a-z0-9]+$/"
-		const PLAY_STORE_REGEX = "/^https?:\\/\\/play\\.google\\.com\\/store\\/apps\\/details/"
-		const PLAY_STORE_TESTING_REGEX = "/^https:\\/\\/play\\.google\\.com\\/apps\\/testing\\/([a-z0-9]+\\.([a-z0-9]+\\.)*[a-z0-9]+)/"
-
-		const IOS_APP_REGEX = "/^id[0-9]+$/"
-		const APP_STORE_REGEX = "/^https?:\\/\\/(itunes|apps)\\.apple\\.com\\//"
-	*/
 	//get company name from params
 	/*
 		argsWithoutProg := os.Args[1:]
