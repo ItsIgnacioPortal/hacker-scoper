@@ -26,6 +26,6 @@ jobs:
         uses: goreleaser/goreleaser-action@v2.4.1
         with:
           version: latest
-          args: release --rm-dist 
+          args: release --rm-dist --config /home/runner/work/hacker-scoper/hacker-scoper/.goreleaser.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
