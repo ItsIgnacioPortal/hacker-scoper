@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       -
+        run: wget https://github.com/PinkDev1/hacker-scoper/.github/workflows/.goreleaser.yml
+      -
         name: checkout
         uses: actions/checkout@v2
         with:
