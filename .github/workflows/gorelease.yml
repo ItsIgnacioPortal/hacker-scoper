@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       -
-        run: cd $GITHUB_WORKSPACE && wget https://raw.githubusercontent.com/PinkDev1/hacker-scoper/main/.github/.goreleaser.yml && pwd
+        run: cd ${{ github.workspace }} && wget https://raw.githubusercontent.com/PinkDev1/hacker-scoper/main/.github/.goreleaser.yml && pwd
       -
         name: checkout
         uses: actions/checkout@v2
@@ -26,6 +26,6 @@ jobs:
         uses: goreleaser/goreleaser-action@v2.4.1
         with:
           version: latest
-          args: release --rm-dist --config $GITHUB_WORKSPACE/.goreleaser.yml
+          args: release --rm-dist --config ${{ github.workspace }}/.goreleaser.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
