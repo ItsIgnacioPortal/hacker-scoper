@@ -38,14 +38,6 @@ func main() {
 	var explicitLevel int //should only be [0], 1, or 2
 	var scopesListFilepath string
 
-	//get company name from params
-	/*
-		argsWithoutProg := os.Args[1:]
-		arg := os.Args[0]
-		fmt.Println(argsWithoutProg)
-		fmt.Println(arg)
-	*/
-
 	const usage = `Usage: ./hacker-scoper --file /path/to/targets [--company company | --custom-scopes-file /path/to/scopes] [--explicit-level INT] [--reuse Y/N] [--chain-mode]
 Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company google --explicit-level 2
   -c, --company string
