@@ -55,7 +55,6 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 
   -csf, --custom-scopes-file string
       Path to a custom plaintext file containing scopes
-	    Default: false
 
   -e, --explicit-level int
       How explicit we expect the scopes to be:
