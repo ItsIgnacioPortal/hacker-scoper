@@ -37,8 +37,9 @@ func main() {
 	var reuseList string  //should only be "Y", "N" or ""
 	var explicitLevel int //should only be [0], 1, or 2
 	var scopesListFilepath string
+	var outofScopesListFilepath string
 
-	const usage = `Usage: ./hacker-scoper --file /path/to/targets [--company company | --custom-scopes-file /path/to/scopes] [--explicit-level INT] [--reuse Y/N] [--chain-mode]
+	const usage = `Usage: ./hacker-scoper --file /path/to/targets [--company company | --custom-inscopes-file /path/to/inscopes [--custom-outofcopes-file] /path/to/outofscopes] [--explicit-level INT] [--reuse Y/N] [--chain-mode]
 Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company google --explicit-level 2
   -c, --company string
       Specify the company name to lookup.
@@ -53,8 +54,11 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
   -f, --file string
       Path to your file containing URLs
 
-  -csf, --custom-scopes-file string
+  -csf, --custom-inscopes-file string
       Path to a custom plaintext file containing scopes
+
+  -cosf, --custom-outofcopes-file
+      Path to a custom plaintext file containing scopes exclusions
 
   -e, --explicit-level int
       How explicit we expect the scopes to be:
@@ -78,7 +82,9 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 	flag.StringVar(&targetsListFilepath, "f", "", "Path to your file containing URLs")
 	flag.StringVar(&targetsListFilepath, "file", "", "Path to your file containing URLs")
 	flag.StringVar(&scopesListFilepath, "csf", "", "Path to a custom plaintext file containing scopes")
-	flag.StringVar(&scopesListFilepath, "custom-scopes-file", "", "Path to a custom plaintext file containing scopes")
+	flag.StringVar(&scopesListFilepath, "custom-inscopes-file", "", "Path to a custom plaintext file containing scopes")
+	flag.StringVar(&outofScopesListFilepath, "cosf", "", "Path to a custom plaintext file containing scopes exclusions")
+	flag.StringVar(&outofScopesListFilepath, "custom-outofcopes-file", "", "Path to a custom plaintext file containing scopes exclusions")
 	flag.IntVar(&explicitLevel, "e", 1, "Level of explicity expected. ([1]/2/3)")
 	flag.IntVar(&explicitLevel, "explicit-level", 1, "Level of explicity expected. ([1]/2/3)")
 	flag.BoolVar(&stxt, "cstxt", false, "Whether or not we will try to scrape security.txt from all domains and subdomains")
@@ -432,7 +438,7 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 								}
 							}
 
-							parseScopesWrapper(scope, explicitLevel, targetsListFilepath)
+							parseScopesWrapper(scope, explicitLevel, targetsListFilepath, outofScopesListFilepath)
 
 						}
 					}
@@ -457,7 +463,7 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 				scopesScanner := bufio.NewScanner(scopesFile)
 
 				for scopesScanner.Scan() {
-					parseScopesWrapper(scopesScanner.Text(), explicitLevel, targetsListFilepath)
+					parseScopesWrapper(scopesScanner.Text(), explicitLevel, targetsListFilepath, outofScopesListFilepath)
 				}
 				scopesFile.Close()
 
@@ -567,8 +573,9 @@ func updateFireBountyJSON() {
 // *.example.com
 // 192.168.0.1
 // 192.168.0.1/24
-func parseScopes(scope string, targetsListFilepath string, isWilcard bool) {
-
+// 192.168.0.1
+// 192.168.0.1/24
+func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outofScopesListFilepath string) {
 	schemedScope := "http://" + scope
 
 	var CIDR *net.IPNet
@@ -648,19 +655,23 @@ func parseScopes(scope string, targetsListFilepath string, isWilcard bool) {
 					//ex: wordpress.example.com with a scope of *.example.com will give a match
 					//we DON'T do it by splitting on dots and matching, because that would cause errors with domains that have two top-level-domains (gov.br for example)
 					if strings.HasSuffix(removePortFromHost(currentTargetURL), scopeURL.Host) {
-						if !chainMode {
-							fmt.Println("[+] IN-SCOPE: " + scanner.Text())
-						} else {
-							fmt.Println(scanner.Text())
+						if !isOutOfScope(currentTargetURL, outofScopesListFilepath) {
+							if !chainMode {
+								fmt.Println("[+] IN-SCOPE: " + scanner.Text())
+							} else {
+								fmt.Println(scanner.Text())
+							}
 						}
 
 					}
 				} else {
 					if removePortFromHost(currentTargetURL) == scopeURL.Host {
-						if !chainMode {
-							fmt.Println("[+] IN-SCOPE: " + scanner.Text())
-						} else {
-							fmt.Println(scanner.Text())
+						if !isOutOfScope(currentTargetURL, outofScopesListFilepath) {
+							if !chainMode {
+								fmt.Println("[+] IN-SCOPE: " + scanner.Text())
+							} else {
+								fmt.Println(scanner.Text())
+							}
 						}
 
 					}
@@ -675,22 +686,21 @@ func parseScopes(scope string, targetsListFilepath string, isWilcard bool) {
 	}
 }
 
-func parseScopesWrapper(scope string, explicitLevel int, targetsListFilepath string) {
-
+func parseScopesWrapper(scope string, explicitLevel int, targetsListFilepath string, outofScopesListFilepath string) {
 	//if we have a wildcard domain
 	if strings.Contains(scope, "*.") {
 		//shorter way of saying if explicitLevel != 3 && explicitLevel !=1
 		if explicitLevel == 2 {
 			//remove wildcard ("*.")
 			scope = strings.ReplaceAll(scope, "*.", "")
-			parseScopes(scope, targetsListFilepath, true)
+			parseScopes(scope, true, targetsListFilepath, outofScopesListFilepath)
 		}
 	} else if explicitLevel == 1 {
 		//this is NOT a wildcard domain, but we'll treat it as such anyway
-		parseScopes(scope, targetsListFilepath, true)
+		parseScopes(scope, true, targetsListFilepath, outofScopesListFilepath)
 	} else {
 		//this is NOT a wildcard domain. we will parse it explicitly
-		parseScopes(scope, targetsListFilepath, false)
+		parseScopes(scope, false, targetsListFilepath, outofScopesListFilepath)
 	}
 }
 
@@ -709,4 +719,61 @@ func removePortFromHost(url *url.URL) string {
 	//obligatory cleanup ("192.168.1.1:" -> "192.168.1.1")
 	portless = strings.Replace(portless, ":", "", 1)
 	return portless
+}
+
+//out-of-scopes are parsed as --explicit-level==2
+func isOutOfScope(target *url.URL, outofScopesListFilepath string) bool {
+	var err error
+	if _, err = os.Stat(outofScopesListFilepath); err == nil {
+		// path/to/whatever exists
+		//open the file
+		//https://stackoverflow.com/a/16615559/11490425
+		outOfScopesFile, err := os.Open(outofScopesListFilepath)
+		if err != nil {
+			crash("Could not open "+outofScopesListFilepath, err)
+		}
+
+		//Read the file line per line using bufio
+		outofScopeScanner := bufio.NewScanner(outOfScopesFile)
+
+		for outofScopeScanner.Scan() {
+			isWildcard := strings.Contains(outofScopeScanner.Text(), "*.")
+			outOfScopeURL, err := url.Parse("http://" + outofScopeScanner.Text())
+			if err != nil {
+				if !chainMode {
+					warning("Couldn't parse out-of-scope \"" + outofScopeScanner.Text() + "\" as a URL.")
+				}
+				return false
+			}
+
+			if isWildcard {
+				//parse the scope as a URL
+
+				//if x is a subdomain of y
+				//ex: wordpress.example.com with a scope of *.example.com will give a match
+				//we DON'T do it by splitting on dots and matching, because that would cause errors with domains that have two top-level-domains (gov.br for example)
+				if strings.HasSuffix(removePortFromHost(target), outOfScopeURL.Host) {
+					return true
+
+				}
+			} else {
+				if removePortFromHost(target) == outOfScopeURL.Host {
+					return true
+
+				}
+			}
+		}
+		outOfScopesFile.Close()
+
+	} else if errors.Is(err, os.ErrNotExist) {
+		// path/to/whatever does *not* exist
+		crash("OutOfScopes file supplied, but it does not exist!", err)
+
+	} else {
+		// Schrodinger: file may or may not exist. See err for details.
+		crash("Couldn't verify existance of outofscopesFile", err)
+
+	}
+	//actually unnecesary. Added to make compiler shut up
+	return false
 }
