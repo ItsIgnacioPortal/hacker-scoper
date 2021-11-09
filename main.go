@@ -563,10 +563,8 @@ func updateFireBountyJSON() {
 }
 
 //we may recieve one like the following as scope:
-// http://example.com
-// http://*.example.com
-// http://192.168.0.1
-// http://192.168.0.1/24
+// example.com
+// *.example.com
 // 192.168.0.1
 // 192.168.0.1/24
 func parseScopes(scope string, targetsListFilepath string, isWilcard bool) {
