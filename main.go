@@ -628,19 +628,23 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 				if CIDR == nil {
 					//Couldn't parse scope as CIDR range, retrying as ip match")
 					if targetIp.String() == scopeIP.String() {
-						if !chainMode {
-							fmt.Println("[+] IN-SCOPE: " + scanner.Text())
-						} else {
-							fmt.Println(scanner.Text())
+						if !isOutOfScope(nil, outofScopesListFilepath, targetIp) {
+							if !chainMode {
+								fmt.Println("[+] IN-SCOPE: " + scanner.Text())
+							} else {
+								fmt.Println(scanner.Text())
+							}
 						}
 
 					}
 				} else {
 					if CIDR.Contains(targetIp) {
-						if !chainMode {
-							fmt.Println("[+] IN-SCOPE: " + scanner.Text())
-						} else {
-							fmt.Println(scanner.Text())
+						if !isOutOfScope(nil, outofScopesListFilepath, targetIp) {
+							if !chainMode {
+								fmt.Println("[+] IN-SCOPE: " + scanner.Text())
+							} else {
+								fmt.Println(scanner.Text())
+							}
 						}
 					}
 				}
@@ -655,7 +659,7 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 					//ex: wordpress.example.com with a scope of *.example.com will give a match
 					//we DON'T do it by splitting on dots and matching, because that would cause errors with domains that have two top-level-domains (gov.br for example)
 					if strings.HasSuffix(removePortFromHost(currentTargetURL), scopeURL.Host) {
-						if !isOutOfScope(currentTargetURL, outofScopesListFilepath) {
+						if !isOutOfScope(currentTargetURL, outofScopesListFilepath, nil) {
 							if !chainMode {
 								fmt.Println("[+] IN-SCOPE: " + scanner.Text())
 							} else {
@@ -666,7 +670,7 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 					}
 				} else {
 					if removePortFromHost(currentTargetURL) == scopeURL.Host {
-						if !isOutOfScope(currentTargetURL, outofScopesListFilepath) {
+						if !isOutOfScope(currentTargetURL, outofScopesListFilepath, nil) {
 							if !chainMode {
 								fmt.Println("[+] IN-SCOPE: " + scanner.Text())
 							} else {
@@ -722,7 +726,7 @@ func removePortFromHost(url *url.URL) string {
 }
 
 //out-of-scopes are parsed as --explicit-level==2
-func isOutOfScope(target *url.URL, outofScopesListFilepath string) bool {
+func isOutOfScope(targetURL *url.URL, outofScopesListFilepath string, targetIP net.IP) bool {
 	var err error
 	if _, err = os.Stat(outofScopesListFilepath); err == nil {
 		// path/to/whatever exists
@@ -737,29 +741,41 @@ func isOutOfScope(target *url.URL, outofScopesListFilepath string) bool {
 		outofScopeScanner := bufio.NewScanner(outOfScopesFile)
 
 		for outofScopeScanner.Scan() {
-			isWildcard := strings.Contains(outofScopeScanner.Text(), "*.")
-			outOfScopeURL, err := url.Parse("http://" + outofScopeScanner.Text())
-			if err != nil {
-				if !chainMode {
-					warning("Couldn't parse out-of-scope \"" + outofScopeScanner.Text() + "\" as a URL.")
+			if targetURL != nil {
+				//parse target as a URL
+				isWildcard := strings.Contains(outofScopeScanner.Text(), "*.")
+				outOfScopeURL, err := url.Parse("http://" + outofScopeScanner.Text())
+				if err != nil {
+					if !chainMode {
+						warning("Couldn't parse out-of-scope \"" + outofScopeScanner.Text() + "\" as a URL.")
+					}
+					return false
 				}
-				return false
-			}
 
-			if isWildcard {
-				//parse the scope as a URL
+				if isWildcard {
+					//if x is a subdomain of y
+					//ex: wordpress.example.com with a scope of *.example.com will give a match
+					//we DON'T do it by splitting on dots and matching, because that would cause errors with domains that have two top-level-domains (gov.br for example)
+					if strings.HasSuffix(removePortFromHost(targetURL), outOfScopeURL.Host) {
+						return true
 
-				//if x is a subdomain of y
-				//ex: wordpress.example.com with a scope of *.example.com will give a match
-				//we DON'T do it by splitting on dots and matching, because that would cause errors with domains that have two top-level-domains (gov.br for example)
-				if strings.HasSuffix(removePortFromHost(target), outOfScopeURL.Host) {
-					return true
+					}
+				} else {
+					if removePortFromHost(targetURL) == outOfScopeURL.Host {
+						return true
 
+					}
 				}
 			} else {
-				if removePortFromHost(target) == outOfScopeURL.Host {
-					return true
-
+				//IP mode
+				//attempt to parse current outOfScope as an IP
+				outOfScopeIp := net.ParseIP(outofScopeScanner.Text())
+				//if we can parse the current outOfScope as an IP...
+				if outOfScopeIp != nil {
+					//try IP match
+					if targetIP.String() == outOfScopeIp.String() {
+						return true
+					}
 				}
 			}
 		}
