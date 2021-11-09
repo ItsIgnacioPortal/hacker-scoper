@@ -25,7 +25,7 @@ This is a go1.17.2 application made for quickly filtering out URLs and IP addres
 
 Download a pre-built binary from the releases page, or run:
 
-`git clone github.com/PinkDev1/hacker-scoper && cd hacker-scoper && go build`
+`git clone https://github.com/PinkDev1/hacker-scoper && cd hacker-scoper && go build`
 
 ## Usage
 
