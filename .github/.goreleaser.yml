@@ -1,11 +1,14 @@
 builds:
+- env:
+  - CGO_ENABLED=0
   # GOOS list to build for.
   # For more info refer to: https://golang.org/doc/install/source#environment
   # Defaults are darwin and linux.
   goos:
-    - freebsd
+    - linux
     - windows
     - darwin
+    - freebsd
 
   # GOARCH to build for.
   # For more info refer to: https://golang.org/doc/install/source#environment
@@ -14,3 +17,4 @@ builds:
     - amd64
     - arm
     - arm64
+    - "386"
