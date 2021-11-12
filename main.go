@@ -693,8 +693,8 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 func parseScopesWrapper(scope string, explicitLevel int, targetsListFilepath string, outofScopesListFilepath string) {
 	//if we have a wildcard domain
 	if strings.Contains(scope, "*.") {
-		//shorter way of saying if explicitLevel != 3 && explicitLevel !=1
-		if explicitLevel == 2 {
+		//shorter way of saying if explicitLevel == 2 || explicitLevel ==1
+		if explicitLevel != 3 {
 			//remove wildcard ("*.")
 			scope = strings.ReplaceAll(scope, "*.", "")
 			parseScopes(scope, true, targetsListFilepath, outofScopesListFilepath)
