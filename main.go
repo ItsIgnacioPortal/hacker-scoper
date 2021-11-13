@@ -256,7 +256,7 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 							//open the output file for writing
 							f, err := os.OpenFile(outputFileName, os.O_APPEND|os.O_WRONLY, 0600)
 							if err != nil {
-								panic(err)
+								crash("Coulnd't open file "+outputFileName+" for writing security.txt URLs.", err)
 							}
 
 							defer f.Close()
@@ -371,7 +371,8 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 	}
 
 	if company == "" && scopesListFilepath == "" {
-		panic("A company name is required to smartly weed-out out-of-scope URLs")
+		var err error
+		crash("A company name is required to smartly weed-out out-of-scope URLs", err)
 	} else {
 
 		//default value. user will use the integrated scope list
@@ -413,7 +414,7 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 			var firebountyJSON Firebounty
 			err = json.Unmarshal(byteValue, &firebountyJSON)
 			if err != nil {
-				panic(err)
+				crash("Couldn't parse firebountyJSON into pre-defined struct.", err)
 			}
 
 			//for every company...
