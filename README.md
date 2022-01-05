@@ -68,6 +68,25 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 
 The firebounty json is automatically updated every 24hs
 
+Custom scopes file example:
+```powershell
+*.example.com
+*.sub.domain.example.com
+192.168.1.10
+192.168.2.1/24
+FE80:0000:0000:0000:0202:B3FF:FE1E:8329
+FE80::0202:B3FF:FE1E:8329
+FE80::0204:B3FF::/24
+```
+
+Custom out-of-scopes file example:
+```javascript
+community.example.com
+feedback.example.com
+192.168.2.254
+FE80::0202:B3FF:FE1E:8330
+```
+
 ## Special thank you
 This project was inspired by the [yeswehack_vdp_finder](https://github.com/yeswehack/yeswehack_vdp_finder)
 
