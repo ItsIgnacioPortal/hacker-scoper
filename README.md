@@ -82,7 +82,8 @@ FE80::0204:B3FF::/24
 Custom out-of-scopes file example:
 ```javascript
 community.example.com
-feedback.example.com
+thirdparty.example.com
+*.thirdparty.example.com
 192.168.2.254
 FE80::0202:B3FF:FE1E:8330
 ```
