@@ -88,6 +88,10 @@ thirdparty.example.com
 FE80::0202:B3FF:FE1E:8330
 ```
 
+## F.A.Q
+- **Q: How does the "company" scope matching actually work?**
+A: It works by looking for company name matches in a local copy of the [firebounty](https://firebounty.com/) database (JSON Formatted). After it finds a match, it'll filter your URLs according to the scopes that firebounty detected for that company.
+
 ## Special thank you
 This project was inspired by the [yeswehack_vdp_finder](https://github.com/yeswehack/yeswehack_vdp_finder)
 
