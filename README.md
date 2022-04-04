@@ -1,6 +1,6 @@
 # Hacker-Scoper
-[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FPinkDev1%2Fhacker-scoper&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
-[![goreleaser](https://github.com/PinkDev1/hacker-scoper/actions/workflows/gorelease.yml/badge.svg)](https://github.com/PinkDev1/hacker-scoper/actions/workflows/gorelease.yml)  
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FItsIgnacioPortal%2Fhacker-scoper&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
+[![goreleaser](https://github.com/ItsIgnacioPortal/hacker-scoper/actions/workflows/gorelease.yml/badge.svg)](https://github.com/ItsIgnacioPortal/hacker-scoper/actions/workflows/gorelease.yml)  
 [![forthebadge](https://forthebadge.com/images/badges/made-with-go.svg)](https://forthebadge.com) 
 [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/cc-sa.svg)](https://forthebadge.com)
@@ -23,9 +23,9 @@ This is a go1.17.2 application made for quickly filtering out URLs and IP addres
 
 ## Installation
 
-Download a pre-built binary from [the releases page](https://github.com/PinkDev1/hacker-scoper/releases), or run:
+Download a pre-built binary from [the releases page](https://github.com/ItsIgnacioPortal/hacker-scoper/releases), or run:
 
-`git clone https://github.com/PinkDev1/hacker-scoper && cd hacker-scoper && go build`
+`git clone https://github.com/ItsIgnacioPortal/hacker-scoper && cd hacker-scoper && go build`
 
 ## Usage
 
