@@ -84,10 +84,10 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
   -f, --file string
       Path to your file containing URLs
 
-  -csf, --custom-inscopes-file string
+  -ins, --inscope-file string
       Path to a custom plaintext file containing scopes
 
-  -cosf, --custom-outofcopes-file
+  -oos, --outofcope-file string
       Path to a custom plaintext file containing scopes exclusions
 
   -e, --explicit-level int
@@ -111,10 +111,10 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 	flag.StringVar(&company, "company", "", "Specify the company name to lookup.")
 	flag.StringVar(&targetsListFilepath, "f", "", "Path to your file containing URLs")
 	flag.StringVar(&targetsListFilepath, "file", "", "Path to your file containing URLs")
-	flag.StringVar(&scopesListFilepath, "csf", "", "Path to a custom plaintext file containing scopes")
-	flag.StringVar(&scopesListFilepath, "custom-inscopes-file", "", "Path to a custom plaintext file containing scopes")
-	flag.StringVar(&outofScopesListFilepath, "cosf", "", "Path to a custom plaintext file containing scopes exclusions")
-	flag.StringVar(&outofScopesListFilepath, "custom-outofcopes-file", "", "Path to a custom plaintext file containing scopes exclusions")
+	flag.StringVar(&scopesListFilepath, "ins", "", "Path to a custom plaintext file containing scopes")
+	flag.StringVar(&scopesListFilepath, "inscope-file", "", "Path to a custom plaintext file containing scopes")
+	flag.StringVar(&outofScopesListFilepath, "oos", "", "Path to a custom plaintext file containing scopes exclusions")
+	flag.StringVar(&outofScopesListFilepath, "outofcope-file", "", "Path to a custom plaintext file containing scopes exclusions")
 	flag.IntVar(&explicitLevel, "e", 1, "Level of explicity expected. ([1]/2/3)")
 	flag.IntVar(&explicitLevel, "explicit-level", 1, "Level of explicity expected. ([1]/2/3)")
 	flag.BoolVar(&stxt, "cstxt", false, "Whether or not we will try to scrape security.txt from all domains and subdomains")
