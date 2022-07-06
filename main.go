@@ -229,7 +229,7 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 					//https://stackoverflow.com/a/16615559/11490425
 					file, err := os.Open(targetsListFilepath)
 					if err != nil {
-						crash("Could not open URL-List file", err)
+						crash("Could not open targets URL-List file", err)
 					}
 
 					//scan the file using bufio
@@ -634,8 +634,13 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 		targetIp := net.ParseIP(portlessHostofCurrentTarget)
 
 		//if it fails...
-		if (err != nil || currentTargetURL.Host == "") && !chainMode {
-			warning("Couldn't parse " + scanner.Text() + " as a valid URL. Probably because it doesn't have a valid scheme (\"http://\" for example).")
+		if (err != nil || currentTargetURL.Host == "") && !chainMode{
+			if(usedstdin){
+				warning("STDIN: Couldn't parse " + scanner.Text() + " as a valid URL.")
+			}else {
+				warning(targetsListFilepath + ": Couldn't parse " + scanner.Text() + " as a valid URL.")
+			}
+			
 		} else {
 			//we were able to parse the target as a URL
 			//if we were able to parse the target as an IP, and the scope as an IP or CIDR range
