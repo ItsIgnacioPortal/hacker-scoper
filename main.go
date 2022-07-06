@@ -604,7 +604,7 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 		scopeURL, err = url.Parse(schemedScope)
 		if err != nil {
 			if !chainMode {
-				warning("Couldn't parse " + scope + " as a valid URL. Probably because it doesn't have a valid scheme (\"http://\" for example")
+				warning("Couldn't parse the scope " + scope + " as a valid URL.")
 			}
 			return
 		}
@@ -624,6 +624,12 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 		//attempt to parse current target as an IP
 		var currentTargetURL *url.URL
 		currentTargetURL, err = url.Parse(scanner.Text())
+		
+		//If we couldn't parse it as is, attempt to add the "https://" prefix
+		if (err != nil || currentTargetURL.Host == ""){
+			currentTargetURL, err = url.Parse("https://" + scanner.Text())
+		}
+
 		portlessHostofCurrentTarget := removePortFromHost(currentTargetURL)
 		targetIp := net.ParseIP(portlessHostofCurrentTarget)
 
@@ -803,7 +809,7 @@ func parseOutOfScopes(targetURL *url.URL, outOfScope string, targetIP net.IP) bo
 	if targetURL != nil {
 		//parse target as a URL
 		isWildcard := strings.Contains(outOfScope, "*.")
-		outOfScopeURL, err := url.Parse("http://" + outOfScope)
+		outOfScopeURL, err := url.Parse("https://" + outOfScope)
 		if err != nil {
 			if !chainMode {
 				warning("Couldn't parse out-of-scope \"" + outOfScope + "\" as a URL.")
