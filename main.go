@@ -790,7 +790,7 @@ func isOutOfScope(targetURL *url.URL, outofScopesListFilepath string, targetIP n
 				if !chainMode {
 					//alert the user about potentially mis-configured bug-bounty program
 					if outOfScope[0:4] == "com." || outOfScope[0:4] == "org." {
-						warning("Scope starting with \"com.\" or \"org. found. This may be a sign of a misconfigured bug bounty program. Consider editing the \"" + firebountyJSONFilename + " file and removing the faulty entries. Also, report the failure to the mainters of the bug bounty program.")
+						warning("Scope starting with \"com.\" or \"org. found. This may be a sign of a misconfigured bug bounty program. Consider editing the \"" + firebountyJSONFilename + " file and removing the faulty entries. Also, report the failure to the maintainers of the bug bounty program.")
 					}
 				}
 				if parseOutOfScopes(targetURL, outOfScope, targetIP) {
