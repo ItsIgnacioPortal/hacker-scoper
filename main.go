@@ -66,6 +66,8 @@ func main() {
 	var explicitLevel int //should only be [0], 1, or 2
 	var scopesListFilepath string
 	var outofScopesListFilepath string
+	var usedstdin bool
+	usedstdin = false
 
 	const usage = `Usage: ./hacker-scoper --file /path/to/targets [--company company | --custom-inscopes-file /path/to/inscopes [--custom-outofcopes-file] /path/to/outofscopes] [--explicit-level INT] [--reuse Y/N] [--chain-mode]
 Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company google --explicit-level 2
@@ -166,7 +168,7 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 
 		var stdinInput string
 
-		tmpFile := createFile("tmp-urls.txt", os.TempDir())
+		tmpFile := createFile("hacker-scoper_stdin_scopes_tmp-file.txt", os.TempDir())
 
 		//read stdin
 		scanner := bufio.NewScanner(os.Stdin)
@@ -178,7 +180,7 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 		}
 
 		//write to disk
-		err := os.WriteFile(os.TempDir()+"/tmp-urls.txt", []byte(stdinInput), 0666)
+		err := os.WriteFile(os.TempDir()+"/hacker-scoper_stdin_scopes_tmp-file.txt", []byte(stdinInput), 0666)
 		if err != nil {
 			crash("Couldn't save write to tmp file.", err)
 		}
@@ -186,7 +188,8 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 		popLine(tmpFile)
 		tmpFile.Close()
 
-		targetsListFilepath = os.TempDir() + "/tmp-urls.txt"
+		targetsListFilepath = os.TempDir() + "/hacker-scoper_stdin_scopes_tmp-file.txt"
+		usedstdin = true
 
 	} //else { //stdin is from a terminal }
 
@@ -229,8 +232,6 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 						crash("Could not open URL-List file", err)
 					}
 
-					defer file.Close()
-
 					//scan the file using bufio
 					scanner := bufio.NewScanner(file)
 
@@ -259,18 +260,21 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 								crash("Coulnd't open file "+outputFileName+" for writing security.txt URLs.", err)
 							}
 
-							defer f.Close()
-
 							//append the URL to the file
 							if _, err = f.WriteString("\n" + URL.String()); err != nil {
 								crash("Couldn't append a line to the security.txt-check output file.", err)
 							}
+
+							f.Close()
+
 						}
 
 						if err := scanner.Err(); err != nil {
 							crash("Could not read URL List file successfully", err)
 						}
 					}
+
+					file.Close()
 
 					//pop the first line of the list, because it contains an unnecesary linejump
 					//the line popper has it's own error handling.
@@ -481,6 +485,11 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 
 	}
 
+	if(usedstdin){
+		//Developers using temporary files are expected to clean up after themselves.
+		//https://superuser.com/a/296827
+		os.Remove(targetsListFilepath)
+	}
 }
 
 //path must not have the end bar (/)
@@ -686,6 +695,9 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 		}
 
 	}
+	
+	file.Close()
+
 	if err := scanner.Err(); err != nil {
 		crash("Could not read URL List file successfully", err)
 	}
