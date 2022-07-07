@@ -105,13 +105,6 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 	
   --fire string
       Set this to specify a path the FireBounty JSON.
-
-
-  NOTE: Targets won't be matched if they don't have a valid scheme:
-    ✅ http://target.com
-    ✅ mongodb://127.0.0.1
-    ❌ target.com
-    ❌ 127.0.0.1
 `
 
 	flag.StringVar(&company, "c", "", "Specify the company name to lookup.")
