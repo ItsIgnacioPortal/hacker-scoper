@@ -30,7 +30,7 @@ Download a pre-built binary from [the releases page](https://github.com/ItsIgnac
 ## Usage
 
 ```
-Usage: ./hacker-scoper --file /path/to/targets [--company company | --custom-scopes-file /path/to/scopes] [--explicit-level INT] [--reuse Y/N] [--chain-mode]
+Usage: ./hacker-scoper --file /path/to/targets [--company company | --custom-inscopes-file /path/to/inscopes [--custom-outofcopes-file] /path/to/outofscopes] [--explicit-level INT] [--reuse Y/N] [--chain-mode] [--fire /path/to/firebounty.json]
 Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company google --explicit-level 2
   -c, --company string
       Specify the company name to lookup.
@@ -45,9 +45,11 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
   -f, --file string
       Path to your file containing URLs
 
-  -csf, --custom-scopes-file string
+  -ins, --inscope-file string
       Path to a custom plaintext file containing scopes
-            Default: false
+
+  -oos, --outofcope-file string
+      Path to a custom plaintext file containing scopes exclusions
 
   -e, --explicit-level int
       How explicit we expect the scopes to be:
@@ -59,11 +61,8 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
       In "chain-mode" we only output the important information. No decorations.
             Default: false
 
-  NOTE: Targets won't be matched if they don't have a valid scheme:
-    ✅ http://target.com
-    ✅ mongodb://127.0.0.1
-    ❌ target.com
-    ❌ 127.0.0.1
+  --fire string
+      Set this to specify a path the FireBounty JSON.
 ```
 
 The firebounty json is automatically updated every 24hs
