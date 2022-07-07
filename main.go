@@ -201,7 +201,7 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 				//explicitLevel = 1
 				howMany = "A lot of"
 			}
-			warning("(--explicit-level=" + strconv.Itoa(explicitLevel) + ") " + howMany + " scopes might appear as duplicates if they are explicitly in the scope, and also covered by a wildcard. Consider running uniq on the output file.")
+			warning("(--explicit-level=" + strconv.Itoa(explicitLevel) + ") " + howMany + " scopes might appear as duplicates if they are explicitly in the scope, and also covered by a wildcard. Consider running uniq on the output.")
 		}
 	}
 
