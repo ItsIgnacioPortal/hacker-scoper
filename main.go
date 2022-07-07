@@ -157,7 +157,10 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 			firebountyJSONPath = os.Getenv("APPDATA") + "\\hacker-scoper\\"
 
 		default:
-			warning("This OS isn't officially supported. The firebounty JSON will be downloaded in the current working directory. To override this behaviour, use the \"--fire\" flag.")
+			if !chainMode {
+				warning("This OS isn't officially supported. The firebounty JSON will be downloaded in the current working directory. To override this behaviour, use the \"--fire\" flag.")
+			}
+			
 			firebountyJSONPath = ""
 		}
 
