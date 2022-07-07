@@ -15,6 +15,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -22,6 +23,7 @@ import (
 
 const firebountyAPIURL = "https://firebounty.com/api/v1/scope/all/url_only/"
 const firebountyJSONFilename = "firebounty-scope-url_only.json"
+var firebountyJSONPath string
 
 //https://tutorialedge.net/golang/parsing-json-with-golang/
 type Scope struct {
@@ -100,6 +102,10 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
       In "chain-mode" we only output the important information. No decorations.
 	    Default: false
 	
+  --fire string
+      Set this to specify a path the FireBounty JSON.
+
+
   NOTE: Targets won't be matched if they don't have a valid scheme:
     ✅ http://target.com
     ✅ mongodb://127.0.0.1
@@ -123,6 +129,7 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 	flag.StringVar(&reuseList, "reuse", "", "Reuse previously generated lists? (Y/N)")
 	flag.BoolVar(&chainMode, "ch", false, "In \"chain-mode\" we only output the important information. No decorations.")
 	flag.BoolVar(&chainMode, "chain-mode", false, "In \"chain-mode\" we only output the important information. No decorations.")
+	flag.StringVar(&firebountyJSONPath, "fire", "", "Path to the FireBounty JSON")
 	//https://www.antoniojgutierrez.com/posts/2021-05-14-short-and-long-options-in-go-flags-pkg/
 	flag.Usage = func() { fmt.Print(usage) }
 	flag.Parse()
@@ -136,6 +143,41 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
                                                                             ||                      
                                                                            ''''                     
 `
+	
+	if firebountyJSONPath == ""{
+		switch runtime.GOOS {
+		case "android":
+			//To maintain support between termux and other terminal emulators, we'll just save it in $HOME
+			firebountyJSONPath = os.Getenv("HOME") + "/.hacker-scoper/"
+
+		case "linux":
+			firebountyJSONPath = "/etc/hacker-scoper/"
+
+		case "windows":
+			firebountyJSONPath = os.Getenv("APPDATA") + "\\hacker-scoper\\"
+
+		default:
+			warning("This OS isn't officially supported. The firebounty JSON will be downloaded in the current working directory. To override this behaviour, use the \"--fire\" flag.")
+			firebountyJSONPath = ""
+		}
+
+		if firebountyJSONPath != "" {
+			//If the folder exists...
+			_, err := os.Stat(firebountyJSONPath)
+			if errors.Is(err, os.ErrNotExist) {
+				//Create the folder
+				err := os.Mkdir(firebountyJSONPath, os.ModePerm)
+				if err != nil {
+					crash("Unable to create the folder \""+firebountyJSONPath+"\"", err)
+				}
+			} else if err != nil {
+				// Schrodinger: file may or may not exist. See err for details.
+				crash("Could not verify existance of the folder \""+firebountyJSONPath+"\"!", err)
+			}
+		}
+	}
+	
+	firebountyJSONPath = firebountyJSONPath + firebountyJSONFilename
 
 	if !chainMode {
 		fmt.Println(banner)
@@ -381,7 +423,7 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 
 		//default value. user will use the integrated scope list
 		if scopesListFilepath == "" {
-			if firebountyJSONFileStats, err := os.Stat(firebountyJSONFilename); err == nil {
+			if firebountyJSONFileStats, err := os.Stat(firebountyJSONPath); err == nil {
 				// path/to/whatever exists
 				//check age. if age > 24hs
 				yesterday := time.Now().Add(-24 * time.Hour)
@@ -395,7 +437,7 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 			} else if errors.Is(err, os.ErrNotExist) {
 				//path/to/whatever does not exist
 				if !chainMode {
-					fmt.Println("[INFO]: Downloading scopes file...")
+					fmt.Println("[INFO]: Downloading scopes file and saving in \"" + firebountyJSONPath +"\"")
 				}
 
 				updateFireBountyJSON()
@@ -406,9 +448,9 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 			}
 
 			//open json
-			jsonFile, err := os.Open(firebountyJSONFilename)
+			jsonFile, err := os.Open(firebountyJSONPath)
 			if err != nil {
-				crash("Couldn't open firebounty JSON. Maybe run \"chmod 777 "+firebountyJSONFilename+"\"? ", err)
+				crash("Couldn't open firebounty JSON. Maybe run \"chmod 777 "+firebountyJSONPath+"\"? ", err)
 			}
 
 			//read the json file as bytes
@@ -439,7 +481,7 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 							if !chainMode {
 								//alert the user about potentially mis-configured bug-bounty program
 								if scope[0:4] == "com." || scope[0:4] == "org." {
-									warning("Scope starting with \"com.\" or \"org. found. This may be a sign of a misconfigured bug bounty program. Consider editing the \"" + firebountyJSONFilename + " file and removing the faulty entries. Also, report the failure to the mainters of the bug bounty program.")
+									warning("Scope starting with \"com.\" or \"org. found. This may be a sign of a misconfigured bug bounty program. Consider editing the \"" + firebountyJSONPath + " file and removing the faulty entries. Also, report the failure to the mainters of the bug bounty program.")
 								}
 							}
 
@@ -564,12 +606,12 @@ func updateFireBountyJSON() {
 	}
 
 	//delete the previous file (if it even exists)
-	os.Remove(firebountyJSONFilename)
+	os.Remove(firebountyJSONPath)
 
 	//write to disk
-	err = os.WriteFile(firebountyJSONFilename, []byte(string(body)), 0666)
+	err = os.WriteFile(firebountyJSONPath, []byte(string(body)), 0666)
 	if err != nil {
-		crash("Couldn't save firebounty json to disk as"+firebountyJSONFilename, err)
+		crash("Couldn't save firebounty json to disk as"+firebountyJSONPath, err)
 	}
 
 	if !chainMode {
@@ -795,7 +837,7 @@ func isOutOfScope(targetURL *url.URL, outofScopesListFilepath string, targetIP n
 				if !chainMode {
 					//alert the user about potentially mis-configured bug-bounty program
 					if outOfScope[0:4] == "com." || outOfScope[0:4] == "org." {
-						warning("Scope starting with \"com.\" or \"org. found. This may be a sign of a misconfigured bug bounty program. Consider editing the \"" + firebountyJSONFilename + " file and removing the faulty entries. Also, report the failure to the maintainers of the bug bounty program.")
+						warning("Scope starting with \"com.\" or \"org. found. This may be a sign of a misconfigured bug bounty program. Consider editing the \"" + firebountyJSONPath + " file and removing the faulty entries. Also, report the failure to the maintainers of the bug bounty program.")
 					}
 				}
 				if parseOutOfScopes(targetURL, outOfScope, targetIP) {
