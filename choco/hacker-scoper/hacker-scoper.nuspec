@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Do not remove this test for UTF-8: if “Ω” doesn’t appear as greek uppercase omega letter enclosed in quotation marks, you should use an editor that supports UTF-8, not this one. -->
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>hacker-scoper</id>
+    <version>2.1.0</version>
+    <packageSourceUrl>https://github.com/ItsIgnacioPortal/hacker-scoper</packageSourceUrl>
+    <owners>ItsIgnacioPortal</owners>
+
+    <!-- ============================== -->
+    <!-- == SOFTWARE SPECIFIC SECTION == -->
+    <!-- This section is about the software itself -->
+
+    <title>hacker-scoper (Install)</title>
+    <authors>ItsIgnacioPortal</authors>
+    <projectUrl>https://github.com/ItsIgnacioPortal/hacker-scoper/</projectUrl>
+    <licenseUrl>https://raw.githubusercontent.com/ItsIgnacioPortal/hacker-scoper/main/LICENSE</licenseUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <projectSourceUrl>https://github.com/ItsIgnacioPortal/hacker-scoper</projectSourceUrl>
+    <bugTrackerUrl>https://github.com/ItsIgnacioPortal/hacker-scoper/issues</bugTrackerUrl>
+    <tags>filter scopes infosec recon bugbounty</tags>
+    <summary>A go application to filter scopes for hacking. Specially useful for researchers on bug-bounty programs. </summary>
+    <description>See github page for more information.</description>
+  </metadata>
+  <files>
+    <!-- this section controls what actually gets packaged into the Chocolatey package -->
+    <file src="tools\**" target="tools" />
+  </files>
+</package>

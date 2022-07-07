@@ -10,3 +10,5 @@ hacker-scoper.exe
 inscope.txt
 noscope.txt
 main.exe
+*.zip
+*.nupkg
