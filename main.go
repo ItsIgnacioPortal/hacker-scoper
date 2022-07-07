@@ -443,7 +443,7 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 								}
 							}
 
-							parseScopesWrapper(scope, explicitLevel, targetsListFilepath, outofScopesListFilepath, firebountyJSON.Pgms[companyCounter].Scopes.Out_of_scopes)
+							parseScopesWrapper(scope, explicitLevel, targetsListFilepath, outofScopesListFilepath, firebountyJSON.Pgms[companyCounter].Scopes.Out_of_scopes, usedstdin)
 
 						}
 					}
@@ -468,7 +468,7 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 				scopesScanner := bufio.NewScanner(scopesFile)
 
 				for scopesScanner.Scan() {
-					parseScopesWrapper(scopesScanner.Text(), explicitLevel, targetsListFilepath, outofScopesListFilepath, nil)
+					parseScopesWrapper(scopesScanner.Text(), explicitLevel, targetsListFilepath, outofScopesListFilepath, nil, usedstdin)
 				}
 				scopesFile.Close()
 
@@ -585,7 +585,7 @@ func updateFireBountyJSON() {
 // 192.168.0.1/24
 // 192.168.0.1
 // 192.168.0.1/24
-func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outofScopesListFilepath string, firebountyOutOfScopes []Scope) {
+func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outofScopesListFilepath string, firebountyOutOfScopes []Scope, usedstdin bool) {
 	schemedScope := "http://" + scope
 
 	var CIDR *net.IPNet
@@ -714,21 +714,21 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 	}
 }
 
-func parseScopesWrapper(scope string, explicitLevel int, targetsListFilepath string, outofScopesListFilepath string, firebountyOutOfScopes []Scope) {
+func parseScopesWrapper(scope string, explicitLevel int, targetsListFilepath string, outofScopesListFilepath string, firebountyOutOfScopes []Scope, usedstdin bool) {
 	//if we have a wildcard domain
 	if strings.Contains(scope, "*.") {
 		//shorter way of saying if explicitLevel == 2 || explicitLevel ==1
 		if explicitLevel != 3 {
 			//remove wildcard ("*.")
 			scope = strings.ReplaceAll(scope, "*.", "")
-			parseScopes(scope, true, targetsListFilepath, outofScopesListFilepath, firebountyOutOfScopes)
+			parseScopes(scope, true, targetsListFilepath, outofScopesListFilepath, firebountyOutOfScopes, usedstdin)
 		}
 	} else if explicitLevel == 1 {
 		//this is NOT a wildcard domain, but we'll treat it as such anyway
-		parseScopes(scope, true, targetsListFilepath, outofScopesListFilepath, firebountyOutOfScopes)
+		parseScopes(scope, true, targetsListFilepath, outofScopesListFilepath, firebountyOutOfScopes, usedstdin)
 	} else {
 		//this is NOT a wildcard domain. we will parse it explicitly
-		parseScopes(scope, false, targetsListFilepath, outofScopesListFilepath, firebountyOutOfScopes)
+		parseScopes(scope, false, targetsListFilepath, outofScopesListFilepath, firebountyOutOfScopes, usedstdin)
 	}
 }
 
