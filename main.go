@@ -467,10 +467,15 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 				crash("Couldn't parse firebountyJSON into pre-defined struct.", err)
 			}
 
+			firebountyQueryReturnedResults := false
+
 			//for every company...
 			for companyCounter := 0; companyCounter < len(firebountyJSON.Pgms); companyCounter++ {
 				fcompany := strings.ToLower(firebountyJSON.Pgms[companyCounter].Name)
 				if strings.Contains(fcompany, company) {
+
+					firebountyQueryReturnedResults = true
+					
 					//match found!
 					if !chainMode {
 						fmt.Print("[+] Search for \""+ company + "\" matched the company " + string(colorGreen) + firebountyJSON.Pgms[companyCounter].Name + string(colorReset) + "!\n")
@@ -495,6 +500,11 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 					}
 				}
 			}
+
+			if (firebountyQueryReturnedResults == false && !chainMode){
+				fmt.Print(string(colorRed) + "[-] 0 (lowercase'd) company names contained the string \"" + company + "\"" + string(colorReset) + "\n")
+			}
+
 		} else {
 			//user chose to use their own scope list
 
