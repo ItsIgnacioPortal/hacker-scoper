@@ -29,6 +29,10 @@ Download a pre-built binary from [the releases page](https://github.com/ItsIgnac
 
 ## Usage
 
+[![asciicast](https://asciinema.org/a/fKXTmmbtNPqKQmn3CrAaXNTB3.svg)](https://asciinema.org/a/fKXTmmbtNPqKQmn3CrAaXNTB3)
+
+[![asciicast](https://asciinema.org/a/N8hohdAxM9cM0RkC6ptHFJygE.svg)](https://asciinema.org/a/N8hohdAxM9cM0RkC6ptHFJygE)
+
 ```
 Usage: ./hacker-scoper --file /path/to/targets [--company company | --custom-inscopes-file /path/to/inscopes [--custom-outofcopes-file] /path/to/outofscopes] [--explicit-level INT] [--reuse Y/N] [--chain-mode] [--fire /path/to/firebounty.json]
 Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company google --explicit-level 2
