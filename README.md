@@ -71,6 +71,18 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 
 The firebounty json is automatically updated every 24hs
 
+list example:
+```powershell
+example.com
+dev.example.com
+1.dev.example.com
+2.dev.example.com
+ads.example.com
+192.168.1.10
+192.168.2.10
+192.168.2.8
+```
+
 Custom scopes file example:
 ```powershell
 *.example.com
