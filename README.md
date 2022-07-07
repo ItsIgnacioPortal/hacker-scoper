@@ -29,8 +29,11 @@ Download a pre-built binary from [the releases page](https://github.com/ItsIgnac
 
 ## Usage
 
+Demo with company lookup 
 [![asciicast](https://asciinema.org/a/fKXTmmbtNPqKQmn3CrAaXNTB3.svg)](https://asciinema.org/a/fKXTmmbtNPqKQmn3CrAaXNTB3)
 
+
+Demo with custom scopes 
 [![asciicast](https://asciinema.org/a/N8hohdAxM9cM0RkC6ptHFJygE.svg)](https://asciinema.org/a/N8hohdAxM9cM0RkC6ptHFJygE)
 
 ```
