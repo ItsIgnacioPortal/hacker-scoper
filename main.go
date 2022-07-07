@@ -56,9 +56,10 @@ type Firebounty struct {
 var chainMode bool
 var targetsListFilepath string
 
-const colorReset = "\033[0m"
+const colorReset  = "\033[0m"
 const colorYellow = "\033[33m"
-const colorRed = "\033[31m"
+const colorRed    = "\033[31m"
+const colorGreen  = "\033[38;2;37;255;36m"
 
 func main() {
 
@@ -395,7 +396,7 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 
 						if !flag {
 							//security.txt found!
-							fmt.Println("[+] security.txt found at: " + scanner.Text())
+							infoGood("","security.txt found at: " + scanner.Text())
 							fmt.Println(string(body))
 						}
 
@@ -696,7 +697,7 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 					if targetIp.String() == scopeIP.String() {
 						if !isOutOfScope(nil, outofScopesListFilepath, targetIp, firebountyOutOfScopes) {
 							if !chainMode {
-								fmt.Println("[+] IN-SCOPE: " + scanner.Text())
+								infoGood("IN-SCOPE: ", scanner.Text())
 							} else {
 								fmt.Println(scanner.Text())
 							}
@@ -707,7 +708,7 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 					if CIDR.Contains(targetIp) {
 						if !isOutOfScope(nil, outofScopesListFilepath, targetIp, firebountyOutOfScopes) {
 							if !chainMode {
-								fmt.Println("[+] IN-SCOPE: " + scanner.Text())
+								infoGood("IN-SCOPE: ", scanner.Text())
 							} else {
 								fmt.Println(scanner.Text())
 							}
@@ -727,7 +728,7 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 					if strings.HasSuffix(removePortFromHost(currentTargetURL), scopeURL.Host) {
 						if !isOutOfScope(currentTargetURL, outofScopesListFilepath, nil, firebountyOutOfScopes) {
 							if !chainMode {
-								fmt.Println("[+] IN-SCOPE: " + scanner.Text())
+								infoGood("IN-SCOPE: ", scanner.Text())
 							} else {
 								fmt.Println(scanner.Text())
 							}
@@ -738,7 +739,7 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 					if removePortFromHost(currentTargetURL) == scopeURL.Host {
 						if !isOutOfScope(currentTargetURL, outofScopesListFilepath, nil, firebountyOutOfScopes) {
 							if !chainMode {
-								fmt.Println("[+] IN-SCOPE: " + scanner.Text())
+								infoGood("IN-SCOPE: ", scanner.Text())
 							} else {
 								fmt.Println(scanner.Text())
 							}
@@ -784,6 +785,10 @@ func crash(message string, err error) {
 
 func warning(message string) {
 	fmt.Print(string(colorYellow) + "[WARNING]: " + message + string(colorReset) + "\n")
+}
+
+func infoGood(prefix string, message string){
+	fmt.Print(string(colorGreen) + "[+] " + prefix + string(colorReset) + message + "\n")
 }
 
 func removePortFromHost(url *url.URL) string {
