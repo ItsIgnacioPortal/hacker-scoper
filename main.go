@@ -624,7 +624,7 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 		//attempt to parse current target as an IP
 		var currentTargetURL *url.URL
 		currentTargetURL, err = url.Parse(scanner.Text())
-		
+
 		//If we couldn't parse it as is, attempt to add the "https://" prefix
 		if (err != nil || currentTargetURL.Host == ""){
 			currentTargetURL, err = url.Parse("https://" + scanner.Text())
@@ -634,13 +634,13 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 		targetIp := net.ParseIP(portlessHostofCurrentTarget)
 
 		//if it fails...
-		if (err != nil || currentTargetURL.Host == "") && !chainMode{
+		if (err != nil || currentTargetURL.Host == "") && !chainMode {
 			if(usedstdin){
 				warning("STDIN: Couldn't parse " + scanner.Text() + " as a valid URL.")
-			}else {
+			} else {
 				warning(targetsListFilepath + ": Couldn't parse " + scanner.Text() + " as a valid URL.")
 			}
-			
+
 		} else {
 			//we were able to parse the target as a URL
 			//if we were able to parse the target as an IP, and the scope as an IP or CIDR range
@@ -706,7 +706,7 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 		}
 
 	}
-	
+
 	file.Close()
 
 	if err := scanner.Err(); err != nil {
