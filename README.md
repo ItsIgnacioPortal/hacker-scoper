@@ -19,7 +19,7 @@ This is a go1.17.2 application made for quickly filtering out URLs and IP addres
 - Match any valid URL ([RFC 3986](https://www.rfc-editor.org/rfc/rfc3986.html) Compliant)
 - Attempt to scrape security.txt files from your targets
 - 100% chainable with other tools: Just use `--chain-mode`, and begin piping targets into STDIN!
-- Detection of mis-configured bug-bounty programs
+- Basic detection of mis-configured bug-bounty programs: Detect if an APK package name was set as a domain (`com.android.example` for example)
 
 ## Installation
 
@@ -79,7 +79,7 @@ FE80::0202:B3FF:FE1E:8329
 FE80::0204:B3FF::/24
 ```
 
-Custom out-of-scopes file example:
+Custom out-of-scope file example:
 ```javascript
 community.example.com
 thirdparty.example.com
@@ -90,7 +90,7 @@ FE80::0202:B3FF:FE1E:8330
 
 ## F.A.Q
 - **Q: How does the "company" scope matching actually work?**     
-A: It works by looking for company name matches in a local copy of the [firebounty](https://firebounty.com/) database (JSON Formatted). After it finds a match, it'll filter your URLs according to the scopes that firebounty detected for that company.
+A: It works by looking for company-name matches in a local copy of the [firebounty](https://firebounty.com/) database (`firebounty-scope-url_only.json`). After it finds a name match, it'll filter your URLs according to the scopes that firebounty detected for that company.
 
 ## Special thank you
 This project was inspired by the [yeswehack_vdp_finder](https://github.com/yeswehack/yeswehack_vdp_finder)
