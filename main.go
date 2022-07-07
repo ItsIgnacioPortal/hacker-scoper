@@ -473,7 +473,7 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 				if strings.Contains(fcompany, company) {
 					//match found!
 					if !chainMode {
-						fmt.Println("Company: " + fcompany)
+						fmt.Print("[+] Search for \""+ company + "\" matched the company " + string(colorGreen) + firebountyJSON.Pgms[companyCounter].Name + string(colorReset) + "!\n")
 					}
 					//for every scope in the program
 					for scopeCounter := 0; scopeCounter < len(firebountyJSON.Pgms[companyCounter].Scopes.In_scopes); scopeCounter++ {
