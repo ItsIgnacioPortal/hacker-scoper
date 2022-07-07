@@ -58,7 +58,7 @@ var targetsListFilepath string
 
 const colorReset  = "\033[0m"
 const colorYellow = "\033[33m"
-const colorRed    = "\033[31m"
+const colorRed    = "\033[38;2;255;0;0m"
 const colorGreen  = "\033[38;2;37;255;36m"
 
 func main() {
