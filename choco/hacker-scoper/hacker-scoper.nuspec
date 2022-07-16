@@ -20,7 +20,7 @@
     <bugTrackerUrl>https://github.com/ItsIgnacioPortal/hacker-scoper/issues</bugTrackerUrl>
     <tags>filter scopes infosec recon bugbounty</tags>
     <summary>A go application to filter scopes for hacking. Specially useful for researchers on bug-bounty programs. </summary>
-    <description>See github page for more information.</description>
+    <description>This is a GoLang application made to filter scopes for hacking. It's specially useful for researchers on bug-bounty programs. </description>
   </metadata>
   <files>
     <!-- this section controls what actually gets packaged into the Chocolatey package -->
