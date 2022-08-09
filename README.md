@@ -36,6 +36,7 @@ go install github.com/ItsIgnacioPortal/hacker-scoper
 ```
 
 **From the releases page**
+
 Download a pre-built binary from [the releases page](https://github.com/ItsIgnacioPortal/hacker-scoper/releases)
 
 ## Usage
