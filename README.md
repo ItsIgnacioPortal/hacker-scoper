@@ -68,18 +68,21 @@ Usage examples:
   hacker-scoper -f recon-targets.txt -c google -e 2
 
   Example: Manually pick a file, use custom scopes and out-of-scope files, and set explicit-level
-  hacker-scoper -f recon-targets.txt -ins inscope -oos noscope.txt -e 2
+  hacker-scoper -f recon-targets.txt -ins inscope -oos noscope.txt -e 2 
+
+Usage notes:
+  If no company and no inscope file are specified, hacker-scoper will look for ".inscope" and ".noscope" files in the current or in parent directories.
 
 List of all possible arguments:
   -c, --company string
       Specify the company name to lookup.
 
   -cstxt, --check-security-txt
-      Whether or not we will try to scrape security.txt from all domains and subdomains
+      Whether or not we will try to scrape security.txt from all domains and subdomains (Warning: experimental feature.)
 
   -r, --reuse string
       Reuse previously generated security.txt lists? (Y/N)
-          Only needed if using "-cstxt"
+	  Only needed if using "-cstxt"
 
   -f, --file string
       Path to your file containing URLs
@@ -94,14 +97,18 @@ List of all possible arguments:
       How explicit we expect the scopes to be:
        1 (default): Include subdomains in the scope even if there's not a wildcard in the scope
        2: Include subdomains in the scope only if there's a wildcard in the scope
-       3: Include subdomains in the scope only if they are explicitly within the scope
+       3: Include subdomains in the scope only if they are explicitly within the scope 
 
   -ch, --chain-mode
       In "chain-mode" we only output the important information. No decorations.
-            Default: false
-
+	    Default: false
+	
   --fire string
-      Set this to specify a path the FireBounty JSON.
+      Set this to specify a path for the FireBounty JSON.
+
+  -o, --output string
+      Save the inscope urls to a file
+
 ```
 
 The firebounty json is automatically updated every 24hs
