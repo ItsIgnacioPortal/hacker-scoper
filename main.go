@@ -539,7 +539,7 @@ List of all possible arguments:
 
 								//If we couldn't parse it as is, attempt to add the "https://" prefix
 								if err != nil || currentTargetURL.Host == "" {
-									currentTargetURL, err = url.Parse("https://" + scope)
+									currentTargetURL, _ = url.Parse("https://" + scope)
 								}
 
 								portlessHostofCurrentTarget := removePortFromHost(currentTargetURL)
