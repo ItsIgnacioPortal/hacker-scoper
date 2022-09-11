@@ -858,7 +858,7 @@ func isOutOfScope(targetURL *url.URL, outofScopesListFilepath string, targetIP n
 	var err error
 
 	if outofScopesListFilepath != "" {
-		//user chose to use their own out-of-scopes file
+		//user chose to use their own out-of-scopes file, or we detected a .noscope file
 		if _, err = os.Stat(outofScopesListFilepath); err == nil {
 			// path/to/whatever exists
 			//open the file
