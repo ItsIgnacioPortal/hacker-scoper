@@ -97,7 +97,7 @@ List of all possible arguments:
       Specify the company name to lookup.
 
   -cstxt, --check-security-txt
-      Whether or not we will try to scrape security.txt from all domains and subdomains
+      Whether or not we will try to scrape security.txt from all domains and subdomains (Warning: experimental feature.)
 
   -r, --reuse string
       Reuse previously generated security.txt lists? (Y/N)
