@@ -509,7 +509,7 @@ List of all possible arguments:
 				}
 			}
 
-			if firebountyQueryReturnedResults == false && !chainMode {
+			if !firebountyQueryReturnedResults && !chainMode {
 				fmt.Print(string(colorRed) + "[-] 0 (lowercase'd) company names contained the string \"" + company + "\"" + string(colorReset) + "\n")
 			}
 
