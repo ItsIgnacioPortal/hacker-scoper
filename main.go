@@ -684,29 +684,35 @@ func updateFireBountyJSON() {
 // 192.168.0.1/24
 // 192.168.0.1
 // 192.168.0.1/24
-func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outofScopesListFilepath string, firebountyOutOfScopes []Scope) {
+func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outofScopesListFilepath string, firebountyOutOfScopes []Scope, parseScopeAsRegex bool) {
 	schemedScope := "http://" + scope
 
 	var CIDR *net.IPNet
 	var parseAsIP bool
 	var scopeURL *url.URL
 	var err error
+	var scopeIP net.IP
 
-	//attempt to parse current scope as a CIDR range
-	_, CIDR, _ = net.ParseCIDR(scope)
-	scopeIP := net.ParseIP(scope)
-	//if we can parse the scope as a CIDR range or as an IP address:
-	if scopeIP.String() != "<nil>" || CIDR != nil {
-		parseAsIP = true
-	} else {
-		parseAsIP = false
-		scopeURL, err = url.Parse(schemedScope)
-		if err != nil {
-			if !chainMode {
-				warning("Couldn't parse the scope " + scope + " as a valid URL.")
+	if !parseScopeAsRegex {
+		//attempt to parse current scope as a CIDR range
+		_, CIDR, _ = net.ParseCIDR(scope)
+		scopeIP := net.ParseIP(scope)
+		//if we can parse the scope as a CIDR range or as an IP address:
+		if scopeIP.String() != "<nil>" || CIDR != nil {
+			parseAsIP = true
+		} else {
+			parseAsIP = false
+			scopeURL, err = url.Parse(schemedScope)
+			if err != nil {
+				if !chainMode {
+					warning("Couldn't parse the scope " + scope + " as a valid URL.")
+				}
+				return
 			}
-			return
 		}
+	} else {
+		scope = strings.Replace(scope, ".", "\\.", -1)
+		scope = strings.Replace(scope, "*", ".*", -1)
 	}
 
 	//open the user-supplied URL list
@@ -741,9 +747,32 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 			}
 
 		} else {
-			//we were able to parse the target as a URL
-			//if we were able to parse the target as an IP, and the scope as an IP or CIDR range
-			if targetIp.String() != "" && parseAsIP {
+			//if we have to parse this scope as a regex, and the current target is not an IP address...
+			if parseScopeAsRegex && !(targetIp.String() != "" && parseAsIP) {
+
+				//attempt to parse the scope as a regex
+				scopeRegex, err := regexp.Compile(scope)
+				if err != nil {
+					crash("There was an error parsing the scope \""+scope+"\" as a regex. This scope was parsed as a regex instead of as a URL because it has 2 or more wildcards.", err)
+				}
+
+				//if the current target host matches the regex...
+				if scopeRegex.MatchString(removePortFromHost(currentTargetURL)) {
+					if !isOutOfScope(currentTargetURL, outofScopesListFilepath, nil, firebountyOutOfScopes) {
+						if !chainMode {
+							infoGood("IN-SCOPE: ", scanner.Text())
+						} else {
+							fmt.Println(scanner.Text())
+						}
+					}
+				}
+
+				//we were able to parse the target as a URL
+				//if we were able to parse the target as an IP, and the scope as an IP or CIDR range
+			} else if targetIp.String() != "" && parseAsIP {
+				if parseScopeAsRegex {
+					return
+				}
 				//if the CIDR range is empty
 				if CIDR == nil {
 					//Couldn't parse scope as CIDR range, retrying as ip match")
@@ -814,20 +843,25 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 }
 
 func parseScopesWrapper(scope string, explicitLevel int, targetsListFilepath string, outofScopesListFilepath string, firebountyOutOfScopes []Scope) {
+
 	//if we have a wildcard domain
-	if strings.Contains(scope, "*.") {
+	if strings.HasPrefix(scope, "*.") {
 		//shorter way of saying if explicitLevel == 2 || explicitLevel ==1
-		if explicitLevel != 3 {
+		if explicitLevel != 3 && strings.Count(scope, "*") == 1 {
 			//remove wildcard ("*.")
 			scope = strings.ReplaceAll(scope, "*.", "")
-			parseScopes(scope, true, targetsListFilepath, outofScopesListFilepath, firebountyOutOfScopes)
+			parseScopes(scope, true, targetsListFilepath, outofScopesListFilepath, firebountyOutOfScopes, false)
 		}
+
+		//if the scope is in a weird wildcard format, containing more than one wildcard...
+	} else if strings.Contains(scope, "*") {
+		parseScopes(scope, true, targetsListFilepath, outofScopesListFilepath, firebountyOutOfScopes, true)
 	} else if explicitLevel == 1 {
 		//this is NOT a wildcard domain, but we'll treat it as such anyway
-		parseScopes(scope, true, targetsListFilepath, outofScopesListFilepath, firebountyOutOfScopes)
+		parseScopes(scope, true, targetsListFilepath, outofScopesListFilepath, firebountyOutOfScopes, false)
 	} else {
 		//this is NOT a wildcard domain. we will parse it explicitly
-		parseScopes(scope, false, targetsListFilepath, outofScopesListFilepath, firebountyOutOfScopes)
+		parseScopes(scope, false, targetsListFilepath, outofScopesListFilepath, firebountyOutOfScopes, false)
 	}
 }
 
@@ -915,18 +949,20 @@ func isOutOfScope(targetURL *url.URL, outofScopesListFilepath string, targetIP n
 }
 
 func parseOutOfScopes(targetURL *url.URL, outOfScope string, targetIP net.IP) bool {
+
 	if targetURL != nil {
 		//parse target as a URL
-		isWildcard := strings.Contains(outOfScope, "*.")
-		outOfScopeURL, err := url.Parse("https://" + outOfScope)
-		if err != nil {
-			if !chainMode {
-				warning("Couldn't parse out-of-scope \"" + outOfScope + "\" as a URL.")
-			}
-			return false
-		}
 
-		if isWildcard {
+		//if the outofscope starts with a wildcard...
+		if strings.HasPrefix(outOfScope, "*.") && strings.Count(outOfScope, "*") == 1 {
+			outOfScopeURL, err := url.Parse("https://" + outOfScope)
+			if err != nil {
+				if !chainMode {
+					warning("Couldn't parse out-of-scope \"" + outOfScope + "\" as a URL.")
+				}
+				return false
+			}
+
 			//if x is a subdomain of y
 			//ex: wordpress.example.com with a scope of *.example.com will give a match
 			//we DON'T do it by splitting on dots and matching, because that would cause errors with domains that have two top-level-domains (gov.br for example)
@@ -934,7 +970,30 @@ func parseOutOfScopes(targetURL *url.URL, outOfScope string, targetIP net.IP) bo
 				return true
 
 			}
+
+			//if the outofscope has more than one wildcard...
+		} else if strings.Contains(outOfScope, "*") {
+
+			//parse as regex
+			outOfScope = strings.Replace(outOfScope, ".", "\\.", -1)
+			outOfScope = strings.Replace(outOfScope, "*", ".*", -1)
+
+			outOfScopeRegex, err := regexp.Compile(outOfScope)
+			if err != nil {
+				crash("There was an error parsing the noscope \""+outOfScope+"\" as a regex. This scope was parsed as a regex instead of as a URL because it has 2 or more wildcards.", err)
+			}
+
+			if outOfScopeRegex.MatchString(removePortFromHost(targetURL)) {
+				return true
+			}
 		} else {
+			outOfScopeURL, err := url.Parse("https://" + outOfScope)
+			if err != nil {
+				if !chainMode {
+					warning("Couldn't parse out-of-scope \"" + outOfScope + "\" as a URL.")
+				}
+				return false
+			}
 			if removePortFromHost(targetURL) == outOfScopeURL.Host {
 				return true
 
