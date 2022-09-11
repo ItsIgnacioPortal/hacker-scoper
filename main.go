@@ -62,6 +62,8 @@ const colorYellow = "\033[33m"
 const colorRed = "\033[38;2;255;0;0m"
 const colorGreen = "\033[38;2;37;255;36m"
 
+var usedstdin bool
+
 func main() {
 
 	var company string
@@ -70,7 +72,6 @@ func main() {
 	var explicitLevel int //should only be [0], 1, or 2
 	var scopesListFilepath string
 	var outofScopesListFilepath string
-	var usedstdin bool
 	usedstdin = false
 
 	const usage = `Usage: hacker-scoper --file /path/to/targets [--company company | --custom-inscopes-file /path/to/inscopes [--custom-outofcopes-file] /path/to/outofscopes] [--explicit-level INT] [--reuse Y/N] [--chain-mode] [--fire /path/to/firebounty.json]
@@ -502,7 +503,7 @@ List of all possible arguments:
 								}
 							}
 
-							parseScopesWrapper(scope, explicitLevel, targetsListFilepath, outofScopesListFilepath, firebountyJSON.Pgms[companyCounter].Scopes.Out_of_scopes, usedstdin)
+							parseScopesWrapper(scope, explicitLevel, targetsListFilepath, outofScopesListFilepath, firebountyJSON.Pgms[companyCounter].Scopes.Out_of_scopes)
 
 						}
 					}
@@ -532,7 +533,7 @@ List of all possible arguments:
 				scopesScanner := bufio.NewScanner(scopesFile)
 
 				for scopesScanner.Scan() {
-					parseScopesWrapper(scopesScanner.Text(), explicitLevel, targetsListFilepath, outofScopesListFilepath, nil, usedstdin)
+					parseScopesWrapper(scopesScanner.Text(), explicitLevel, targetsListFilepath, outofScopesListFilepath, nil)
 				}
 				scopesFile.Close()
 
@@ -549,11 +550,6 @@ List of all possible arguments:
 
 	}
 
-	if usedstdin {
-		//Developers using temporary files are expected to clean up after themselves.
-		//https://superuser.com/a/296827
-		os.Remove(targetsListFilepath)
-	}
 }
 
 //path must not have the end bar (/)
@@ -649,7 +645,7 @@ func updateFireBountyJSON() {
 // 192.168.0.1/24
 // 192.168.0.1
 // 192.168.0.1/24
-func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outofScopesListFilepath string, firebountyOutOfScopes []Scope, usedstdin bool) {
+func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outofScopesListFilepath string, firebountyOutOfScopes []Scope) {
 	schemedScope := "http://" + scope
 
 	var CIDR *net.IPNet
@@ -778,25 +774,26 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 	}
 }
 
-func parseScopesWrapper(scope string, explicitLevel int, targetsListFilepath string, outofScopesListFilepath string, firebountyOutOfScopes []Scope, usedstdin bool) {
+func parseScopesWrapper(scope string, explicitLevel int, targetsListFilepath string, outofScopesListFilepath string, firebountyOutOfScopes []Scope) {
 	//if we have a wildcard domain
 	if strings.Contains(scope, "*.") {
 		//shorter way of saying if explicitLevel == 2 || explicitLevel ==1
 		if explicitLevel != 3 {
 			//remove wildcard ("*.")
 			scope = strings.ReplaceAll(scope, "*.", "")
-			parseScopes(scope, true, targetsListFilepath, outofScopesListFilepath, firebountyOutOfScopes, usedstdin)
+			parseScopes(scope, true, targetsListFilepath, outofScopesListFilepath, firebountyOutOfScopes)
 		}
 	} else if explicitLevel == 1 {
 		//this is NOT a wildcard domain, but we'll treat it as such anyway
-		parseScopes(scope, true, targetsListFilepath, outofScopesListFilepath, firebountyOutOfScopes, usedstdin)
+		parseScopes(scope, true, targetsListFilepath, outofScopesListFilepath, firebountyOutOfScopes)
 	} else {
 		//this is NOT a wildcard domain. we will parse it explicitly
-		parseScopes(scope, false, targetsListFilepath, outofScopesListFilepath, firebountyOutOfScopes, usedstdin)
+		parseScopes(scope, false, targetsListFilepath, outofScopesListFilepath, firebountyOutOfScopes)
 	}
 }
 
 func crash(message string, err error) {
+	cleanup()
 	fmt.Print(string(colorRed) + "[ERROR]: " + message + string(colorReset) + "\n")
 	panic(err)
 }
@@ -919,4 +916,12 @@ func parseOutOfScopes(targetURL *url.URL, outOfScope string, targetIP net.IP) bo
 
 	//if nothing matched
 	return false
+}
+
+func cleanup() {
+	if usedstdin {
+		//Developers using temporary files are expected to clean up after themselves.
+		//https://superuser.com/a/296827
+		os.Remove(targetsListFilepath)
+	}
 }

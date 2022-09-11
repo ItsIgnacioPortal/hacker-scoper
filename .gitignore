@@ -12,3 +12,6 @@ noscope.txt
 main.exe
 *.zip
 *.nupkg
+.inscope
+.noscope
+todo.txt
