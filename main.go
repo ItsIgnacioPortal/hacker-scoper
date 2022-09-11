@@ -63,6 +63,8 @@ const colorRed = "\033[38;2;255;0;0m"
 const colorGreen = "\033[38;2;37;255;36m"
 
 var usedstdin bool
+var inscopeOutputFile string
+var inscopeURLs []string
 
 func main() {
 
@@ -124,6 +126,9 @@ List of all possible arguments:
 	
   --fire string
       Set this to specify a path for the FireBounty JSON.
+
+  -o, --output string
+      Save the inscope urls to a file
 `
 
 	flag.StringVar(&company, "c", "", "Specify the company name to lookup.")
@@ -143,6 +148,8 @@ List of all possible arguments:
 	flag.BoolVar(&chainMode, "ch", false, "In \"chain-mode\" we only output the important information. No decorations.")
 	flag.BoolVar(&chainMode, "chain-mode", false, "In \"chain-mode\" we only output the important information. No decorations.")
 	flag.StringVar(&firebountyJSONPath, "fire", "", "Path to the FireBounty JSON")
+	flag.StringVar(&inscopeOutputFile, "o", "", "Save the inscope urls to a file")
+	flag.StringVar(&inscopeOutputFile, "output", "", "Save the inscope urls to a file")
 	//https://www.antoniojgutierrez.com/posts/2021-05-14-short-and-long-options-in-go-flags-pkg/
 	flag.Usage = func() { fmt.Print(usage) }
 	flag.Parse()
@@ -589,6 +596,25 @@ List of all possible arguments:
 
 	}
 
+	if inscopeOutputFile != "" {
+		inscopeURLs = removeDuplicateStr(inscopeURLs)
+
+		for i := 0; i < len(inscopeURLs); i++ {
+			f, err := os.OpenFile(inscopeOutputFile, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+			if err != nil {
+				crash("Unable to read output file", err)
+			}
+
+			defer f.Close()
+
+			if _, err = f.WriteString(inscopeURLs[i]); err != nil {
+				crash("Unable to write to output file", err)
+			}
+		}
+	}
+
+	cleanup()
+
 }
 
 //path must not have the end bar (/)
@@ -759,11 +785,7 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 				//if the current target host matches the regex...
 				if scopeRegex.MatchString(removePortFromHost(currentTargetURL)) {
 					if !isOutOfScope(currentTargetURL, outofScopesListFilepath, nil, firebountyOutOfScopes) {
-						if !chainMode {
-							infoGood("IN-SCOPE: ", scanner.Text())
-						} else {
-							fmt.Println(scanner.Text())
-						}
+						logInScope(scanner.Text())
 					}
 				}
 
@@ -778,22 +800,14 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 					//Couldn't parse scope as CIDR range, retrying as ip match")
 					if targetIp.String() == scopeIP.String() {
 						if !isOutOfScope(nil, outofScopesListFilepath, targetIp, firebountyOutOfScopes) {
-							if !chainMode {
-								infoGood("IN-SCOPE: ", scanner.Text())
-							} else {
-								fmt.Println(scanner.Text())
-							}
+							logInScope(scanner.Text())
 						}
 
 					}
 				} else {
 					if CIDR.Contains(targetIp) {
 						if !isOutOfScope(nil, outofScopesListFilepath, targetIp, firebountyOutOfScopes) {
-							if !chainMode {
-								infoGood("IN-SCOPE: ", scanner.Text())
-							} else {
-								fmt.Println(scanner.Text())
-							}
+							logInScope(scanner.Text())
 						}
 					}
 				}
@@ -809,22 +823,14 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 					//we DON'T do it by splitting on dots and matching, because that would cause errors with domains that have two top-level-domains (gov.br for example)
 					if strings.HasSuffix(removePortFromHost(currentTargetURL), scopeURL.Host) {
 						if !isOutOfScope(currentTargetURL, outofScopesListFilepath, nil, firebountyOutOfScopes) {
-							if !chainMode {
-								infoGood("IN-SCOPE: ", scanner.Text())
-							} else {
-								fmt.Println(scanner.Text())
-							}
+							logInScope(scanner.Text())
 						}
 
 					}
 				} else {
 					if removePortFromHost(currentTargetURL) == scopeURL.Host {
 						if !isOutOfScope(currentTargetURL, outofScopesListFilepath, nil, firebountyOutOfScopes) {
-							if !chainMode {
-								infoGood("IN-SCOPE: ", scanner.Text())
-							} else {
-								fmt.Println(scanner.Text())
-							}
+							logInScope(scanner.Text())
 						}
 
 					}
@@ -1052,4 +1058,28 @@ func cleanup() {
 		//https://superuser.com/a/296827
 		os.Remove(targetsListFilepath)
 	}
+}
+
+func logInScope(url string) {
+	if !chainMode {
+		infoGood("IN-SCOPE: ", url)
+	} else {
+		fmt.Println(url)
+	}
+
+	if inscopeOutputFile != "" {
+		inscopeURLs = append(inscopeURLs, url)
+	}
+}
+
+func removeDuplicateStr(strSlice []string) []string {
+	allKeys := make(map[string]bool)
+	list := []string{}
+	for _, item := range strSlice {
+		if _, value := allKeys[item]; !value {
+			allKeys[item] = true
+			list = append(list, item)
+		}
+	}
+	return list
 }
