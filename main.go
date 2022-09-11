@@ -89,8 +89,8 @@ Usage examples:
   Example: Cat a file, and lookup scopes on firebounty
   cat recon-targets.txt | hacker-scoper -c google
 
-  Example: Cat a file, lookup scopes on firebounty, disable the fancy output, sort, and remove duplicats
-  cat recon-targets.txt | hacker-scoper -c google -ch | sort -u
+  Example: Cat a file, and use the .inscope & .noscope files
+  cat recon-targets.txt | hacker-scoper
 
   Example: Manually pick a file, lookup scopes on firebounty, and set explicit-level
   hacker-scoper -f recon-targets.txt -c google -e 2
