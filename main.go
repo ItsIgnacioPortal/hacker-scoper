@@ -434,8 +434,8 @@ List of all possible arguments:
 		crash("A company name is required to smartly weed-out out-of-scope URLs", err)
 	} else {
 
-		//default value. user will use the integrated scope list
-		if scopesListFilepath == "" {
+		//user selected a company. Use the firebounty db
+		if company != "" {
 			if firebountyJSONFileStats, err := os.Stat(firebountyJSONPath); err == nil {
 				// path/to/whatever exists
 				//check age. if age > 24hs
@@ -514,8 +514,8 @@ List of all possible arguments:
 				fmt.Print(string(colorRed) + "[-] 0 (lowercase'd) company names contained the string \"" + company + "\"" + string(colorReset) + "\n")
 			}
 
-		} else {
 			//user chose to use their own scope list
+		} else {
 
 			if _, err := os.Stat(scopesListFilepath); err == nil {
 				// path/to/whatever exists
