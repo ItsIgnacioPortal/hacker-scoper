@@ -16,6 +16,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"runtime"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -210,19 +211,6 @@ List of all possible arguments:
 	if (explicitLevel != 1) && (explicitLevel != 2) && explicitLevel != 3 {
 		var err error
 		crash("Invalid explicit-level selected", err)
-	}
-
-	if !chainMode {
-		if explicitLevel != 3 {
-			var howMany string
-			if explicitLevel == 2 {
-				howMany = "Some"
-			} else {
-				//explicitLevel = 1
-				howMany = "A lot of"
-			}
-			warning("(--explicit-level=" + strconv.Itoa(explicitLevel) + ") " + howMany + " scopes might appear as duplicates if they are explicitly in the scope, and also covered by a wildcard. Consider running uniq on the output.")
-		}
 	}
 
 	//overwrite whathever was feeded to targetsListFilepath with the stdin input
@@ -596,10 +584,18 @@ List of all possible arguments:
 
 	}
 
-	if inscopeOutputFile != "" {
-		inscopeURLs = removeDuplicateStr(inscopeURLs)
+	inscopeURLs = removeDuplicateStr(inscopeURLs)
+	sort.Strings(inscopeURLs)
 
-		for i := 0; i < len(inscopeURLs); i++ {
+	for i := 0; i < len(inscopeURLs); i++ {
+
+		if !chainMode {
+			infoGood("IN-SCOPE: ", inscopeURLs[i])
+		} else {
+			fmt.Println(inscopeURLs[i])
+		}
+
+		if inscopeOutputFile != "" {
 			f, err := os.OpenFile(inscopeOutputFile, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 			if err != nil {
 				crash("Unable to read output file", err)
@@ -607,12 +603,11 @@ List of all possible arguments:
 
 			defer f.Close()
 
-			if _, err = f.WriteString(inscopeURLs[i]); err != nil {
+			if _, err = f.WriteString(inscopeURLs[i] + "\n"); err != nil {
 				crash("Unable to write to output file", err)
 			}
 		}
 	}
-
 	cleanup()
 
 }
@@ -1061,15 +1056,7 @@ func cleanup() {
 }
 
 func logInScope(url string) {
-	if !chainMode {
-		infoGood("IN-SCOPE: ", url)
-	} else {
-		fmt.Println(url)
-	}
-
-	if inscopeOutputFile != "" {
-		inscopeURLs = append(inscopeURLs, url)
-	}
+	inscopeURLs = append(inscopeURLs, url)
 }
 
 func removeDuplicateStr(strSlice []string) []string {
