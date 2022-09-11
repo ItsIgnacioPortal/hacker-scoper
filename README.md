@@ -21,7 +21,7 @@ This is a go1.17.2 application made for quickly filtering out URLs and IP addres
 - Attempt to scrape security.txt files from your targets
 - 100% chainable with other tools: Just use `-ch`/`--chain-mode` to disable the fancy text decorations
 - TLD-Based detection of mis-configured bug-bounty programs: The most common case is bug bounty programs setting apk package names like `com.my.businness.gatewayportal` as web_application resources
-- If no company name and no custom files are specified, look for `.inscope` and `.noscope` files in the current or parent directories.
+- If no company name and no custom files are specified, hacker-scoper will look for `.inscope` and `.noscope` files in the current or parent directories.
 - Save output to a file
 
 ## Installation
