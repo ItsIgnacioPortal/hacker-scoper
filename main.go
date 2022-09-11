@@ -73,8 +73,22 @@ func main() {
 	var usedstdin bool
 	usedstdin = false
 
-	const usage = `Usage: ./hacker-scoper --file /path/to/targets [--company company | --custom-inscopes-file /path/to/inscopes [--custom-outofcopes-file] /path/to/outofscopes] [--explicit-level INT] [--reuse Y/N] [--chain-mode] [--fire /path/to/firebounty.json]
-Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company google --explicit-level 2
+	const usage = `Usage: hacker-scoper --file /path/to/targets [--company company | --custom-inscopes-file /path/to/inscopes [--custom-outofcopes-file] /path/to/outofscopes] [--explicit-level INT] [--reuse Y/N] [--chain-mode] [--fire /path/to/firebounty.json]
+
+Usage examples:
+  Example: Cat a file, and lookup scopes on firebounty
+  cat recon-targets.txt | hacker-scoper -c google
+
+  Example: Cat a file, lookup scopes on firebounty, disable the fancy output, sort, and remove duplicats
+  cat recon-targets.txt | hacker-scoper -c google -ch | sort -u
+
+  Example: Manually pick a file, lookup scopes on firebounty, and set explicit-level
+  hacker-scoper -f recon-targets.txt -c google -e 2
+
+  Example: Manually pick a file, use custom scopes and out-of-scope files, and set explicit-level
+  hacker-scoper -f recon-targets.txt -ins inscope -oos noscope.txt -e 2 
+
+List of all possible arguments:
   -c, --company string
       Specify the company name to lookup.
 
