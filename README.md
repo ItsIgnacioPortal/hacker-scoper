@@ -41,11 +41,14 @@ Download a pre-built binary from [the releases page](https://github.com/ItsIgnac
 
 ## Usage
 
-Demo with company lookup 
+### Demo with company lookup 
 [![asciicast](https://asciinema.org/a/fKXTmmbtNPqKQmn3CrAaXNTB3.svg)](https://asciinema.org/a/fKXTmmbtNPqKQmn3CrAaXNTB3)
+<br>
+<br>
+<br>
+<br>
 
-
-Demo with custom scopes 
+### Demo with custom scopes file
 [![asciicast](https://asciinema.org/a/N8hohdAxM9cM0RkC6ptHFJygE.svg)](https://asciinema.org/a/N8hohdAxM9cM0RkC6ptHFJygE)
 
 ```
