@@ -430,8 +430,44 @@ List of all possible arguments:
 	}
 
 	if company == "" && scopesListFilepath == "" {
-		var err error
-		crash("A company name is required to smartly weed-out out-of-scope URLs", err)
+		//var err error
+		//crash("A company name is required to smartly weed-out out-of-scope URLs", err)
+
+		if !chainMode {
+			fmt.Print("No company or scopes file specified. Looking for a \".inscope\" file..." + "\n")
+		}
+
+		//look for .inscope file
+		inscopePath, err := searchForFileBackwards(".inscope")
+		if err != nil {
+			crash("Couldn't locate a .inscope file.", err)
+		}
+
+		if !chainMode {
+			fmt.Print(".inscope found. Using " + inscopePath + "\n")
+		}
+
+		//look for .inscope file
+		noscopePath, err := searchForFileBackwards(".noscope")
+		if err != nil {
+			noscopePath = ""
+		} else if !chainMode {
+			fmt.Print(".noscope found. Using " + noscopePath + "\n")
+		}
+
+		inscopeFileio, err := os.Open(inscopePath)
+		if err != nil {
+			crash("Couldn't open "+inscopePath, err)
+		}
+
+		//Read the file line per line using bufio
+		scopesScanner := bufio.NewScanner(inscopeFileio)
+
+		for scopesScanner.Scan() {
+			parseScopesWrapper(scopesScanner.Text(), explicitLevel, targetsListFilepath, noscopePath, nil)
+		}
+		inscopeFileio.Close()
+
 	} else {
 
 		//user selected a company. Use the firebounty db
@@ -917,6 +953,36 @@ func parseOutOfScopes(targetURL *url.URL, outOfScope string, targetIP net.IP) bo
 	//if nothing matched
 	return false
 }
+
+//======================================================================================
+// The following code is from tomnomnom's inscope project:
+// https://github.com/tomnomnom/hacks/tree/master/inscope
+
+func searchForFileBackwards(filename string) (string, error) {
+	pwd, err := filepath.Abs(".")
+	if err != nil {
+		return "", err
+	}
+
+	for {
+		_, err := os.Stat(filepath.Join(pwd, filename))
+
+		// found one!
+		if err == nil {
+			return filepath.Join(pwd, filename), nil
+		}
+
+		newPwd := filepath.Dir(pwd)
+		if newPwd == pwd {
+			break
+		}
+		pwd = newPwd
+	}
+
+	return "", errors.New("unable to locate a \".scope\" file")
+}
+
+//======================================================================================
 
 func cleanup() {
 	if usedstdin {
