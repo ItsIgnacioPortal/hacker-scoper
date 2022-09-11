@@ -20,6 +20,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"golang.org/x/net/publicsuffix"
 )
 
 const firebountyAPIURL = "https://firebounty.com/api/v1/scope/all/url_only/"
@@ -531,9 +533,22 @@ List of all possible arguments:
 							scope := firebountyJSON.Pgms[companyCounter].Scopes.In_scopes[scopeCounter].Scope
 
 							if !chainMode {
+								//attempt to parse current target as an IP
+								var currentTargetURL *url.URL
+								currentTargetURL, err = url.Parse(scope)
+
+								//If we couldn't parse it as is, attempt to add the "https://" prefix
+								if err != nil || currentTargetURL.Host == "" {
+									currentTargetURL, err = url.Parse("https://" + scope)
+								}
+
+								portlessHostofCurrentTarget := removePortFromHost(currentTargetURL)
+
 								//alert the user about potentially mis-configured bug-bounty program
-								if scope[0:4] == "com." || scope[0:4] == "org." {
-									warning("Scope starting with \"com.\" or \"org. found. This may be a sign of a misconfigured bug bounty program. Consider editing the \"" + firebountyJSONPath + " file and removing the faulty entries. Also, report the failure to the mainters of the bug bounty program.")
+								_, scopeHasValidTLD := publicsuffix.PublicSuffix(portlessHostofCurrentTarget)
+
+								if !scopeHasValidTLD && currentTargetURL.Host != "" {
+									warning("\"" + scope + "\". Does not have a public Top Level Domain (TLD). This may be a sign of a misconfigured bug bounty program. Consider editing the \"" + firebountyJSONPath + " file and removing the faulty entries. Also, report the failure to the mainters of the bug bounty program.")
 								}
 							}
 
