@@ -123,7 +123,7 @@ List of all possible arguments:
 	    Default: false
 	
   --fire string
-      Set this to specify a path the FireBounty JSON.
+      Set this to specify a path for the FireBounty JSON.
 `
 
 	flag.StringVar(&company, "c", "", "Specify the company name to lookup.")
