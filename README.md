@@ -123,7 +123,7 @@ FE80::0202:B3FF:FE1E:8330
 
 ## F.A.Q
 - **Q: How does the "company" scope matching actually work?**     
-A: It works by looking for company-name matches in a local copy of the [firebounty](https://firebounty.com/) database (`firebounty-scope-url_only.json`). After it finds a name match, it'll filter your URLs according to the scopes that firebounty detected for that company.
+A: It works by looking for company-name matches in a local copy of the [firebounty](https://firebounty.com/) database (`firebounty-scope-url_only.json`). The company name that you specify will be lowercase'd, and hacker-scoper will check if any company name in the JSON contains that string. Once it finds a name match, it'll filter your URLs according to the scopes that firebounty detected for that company. You can test how this would perform by just searching some name in [the firebounty website](https://firebounty.com/).
 
 ## Special thank you
 This project was inspired by the [yeswehack_vdp_finder](https://github.com/yeswehack/yeswehack_vdp_finder)
