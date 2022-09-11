@@ -109,6 +109,8 @@ List of all possible arguments:
   -o, --output string
       Save the inscope urls to a file
 
+  --version
+      Show the installed version
 ```
 
 The firebounty json is automatically updated every 24hs

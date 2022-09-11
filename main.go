@@ -71,6 +71,8 @@ var inscopeURLs []string
 
 func main() {
 
+	var version string
+	var showVersion bool
 	var company string
 	var stxt bool
 	var reuseList string  //should only be "Y", "N" or ""
@@ -78,6 +80,8 @@ func main() {
 	var scopesListFilepath string
 	var outofScopesListFilepath string
 	usedstdin = false
+
+	version = "v3.0.0"
 
 	const usage = `Usage: hacker-scoper --file /path/to/targets [--company company | --custom-inscopes-file /path/to/inscopes [--custom-outofcopes-file] /path/to/outofscopes] [--explicit-level INT] [--reuse Y/N] [--chain-mode] [--fire /path/to/firebounty.json]
 
@@ -132,6 +136,9 @@ List of all possible arguments:
 
   -o, --output string
       Save the inscope urls to a file
+
+  --version
+      Show the installed version
 `
 
 	flag.StringVar(&company, "c", "", "Specify the company name to lookup.")
@@ -153,6 +160,7 @@ List of all possible arguments:
 	flag.StringVar(&firebountyJSONPath, "fire", "", "Path to the FireBounty JSON")
 	flag.StringVar(&inscopeOutputFile, "o", "", "Save the inscope urls to a file")
 	flag.StringVar(&inscopeOutputFile, "output", "", "Save the inscope urls to a file")
+	flag.BoolVar(&showVersion, "version", false, "Show installed version")
 	//https://www.antoniojgutierrez.com/posts/2021-05-14-short-and-long-options-in-go-flags-pkg/
 	flag.Usage = func() { fmt.Print(usage) }
 	flag.Parse()
@@ -166,6 +174,11 @@ List of all possible arguments:
                                                                             ||                      
                                                                            ''''                     
 `
+
+	if showVersion {
+		fmt.Print("hacker-scoper:" + version + "\n")
+		os.Exit(0)
+	}
 
 	if firebountyJSONPath == "" {
 		switch runtime.GOOS {
