@@ -23,6 +23,7 @@ import (
 
 const firebountyAPIURL = "https://firebounty.com/api/v1/scope/all/url_only/"
 const firebountyJSONFilename = "firebounty-scope-url_only.json"
+
 var firebountyJSONPath string
 
 //https://tutorialedge.net/golang/parsing-json-with-golang/
@@ -56,10 +57,10 @@ type Firebounty struct {
 var chainMode bool
 var targetsListFilepath string
 
-const colorReset  = "\033[0m"
+const colorReset = "\033[0m"
 const colorYellow = "\033[33m"
-const colorRed    = "\033[38;2;255;0;0m"
-const colorGreen  = "\033[38;2;37;255;36m"
+const colorRed = "\033[38;2;255;0;0m"
+const colorGreen = "\033[38;2;37;255;36m"
 
 func main() {
 
@@ -137,8 +138,8 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
                                                                             ||                      
                                                                            ''''                     
 `
-	
-	if firebountyJSONPath == ""{
+
+	if firebountyJSONPath == "" {
 		switch runtime.GOOS {
 		case "android":
 			//To maintain support between termux and other terminal emulators, we'll just save it in $HOME
@@ -154,7 +155,7 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 			if !chainMode {
 				warning("This OS isn't officially supported. The firebounty JSON will be downloaded in the current working directory. To override this behaviour, use the \"--fire\" flag.")
 			}
-			
+
 			firebountyJSONPath = ""
 		}
 
@@ -173,7 +174,7 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 			}
 		}
 	}
-	
+
 	firebountyJSONPath = firebountyJSONPath + firebountyJSONFilename
 
 	if !chainMode {
@@ -389,7 +390,7 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 
 						if !flag {
 							//security.txt found!
-							infoGood("","security.txt found at: " + scanner.Text())
+							infoGood("", "security.txt found at: "+scanner.Text())
 							fmt.Println(string(body))
 						}
 
@@ -434,7 +435,7 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 			} else if errors.Is(err, os.ErrNotExist) {
 				//path/to/whatever does not exist
 				if !chainMode {
-					fmt.Println("[INFO]: Downloading scopes file and saving in \"" + firebountyJSONPath +"\"")
+					fmt.Println("[INFO]: Downloading scopes file and saving in \"" + firebountyJSONPath + "\"")
 				}
 
 				updateFireBountyJSON()
@@ -468,10 +469,10 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 				if strings.Contains(fcompany, company) {
 
 					firebountyQueryReturnedResults = true
-					
+
 					//match found!
 					if !chainMode {
-						fmt.Print("[+] Search for \""+ company + "\" matched the company " + string(colorGreen) + firebountyJSON.Pgms[companyCounter].Name + string(colorReset) + "!\n")
+						fmt.Print("[+] Search for \"" + company + "\" matched the company " + string(colorGreen) + firebountyJSON.Pgms[companyCounter].Name + string(colorReset) + "!\n")
 					}
 					//for every scope in the program
 					for scopeCounter := 0; scopeCounter < len(firebountyJSON.Pgms[companyCounter].Scopes.In_scopes); scopeCounter++ {
@@ -494,7 +495,7 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 				}
 			}
 
-			if (firebountyQueryReturnedResults == false && !chainMode){
+			if firebountyQueryReturnedResults == false && !chainMode {
 				fmt.Print(string(colorRed) + "[-] 0 (lowercase'd) company names contained the string \"" + company + "\"" + string(colorReset) + "\n")
 			}
 
@@ -534,7 +535,7 @@ Example: ./hacker-scoper --file /home/kali/Downloads/recon-targets.txt --company
 
 	}
 
-	if(usedstdin){
+	if usedstdin {
 		//Developers using temporary files are expected to clean up after themselves.
 		//https://superuser.com/a/296827
 		os.Remove(targetsListFilepath)
@@ -622,7 +623,7 @@ func updateFireBountyJSON() {
 	}
 
 	if !chainMode {
-		fmt.Println("[INFO]: Scopes file updated succesfully.")
+		fmt.Println("[INFO]: Scopes file saved to " + firebountyJSONPath)
 	}
 
 }
@@ -675,7 +676,7 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 		currentTargetURL, err = url.Parse(scanner.Text())
 
 		//If we couldn't parse it as is, attempt to add the "https://" prefix
-		if (err != nil || currentTargetURL.Host == ""){
+		if err != nil || currentTargetURL.Host == "" {
 			currentTargetURL, err = url.Parse("https://" + scanner.Text())
 		}
 
@@ -684,7 +685,7 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 
 		//if it fails...
 		if (err != nil || currentTargetURL.Host == "") && !chainMode {
-			if(usedstdin){
+			if usedstdin {
 				warning("STDIN: Couldn't parse " + scanner.Text() + " as a valid URL.")
 			} else {
 				warning(targetsListFilepath + ": Couldn't parse " + scanner.Text() + " as a valid URL.")
@@ -790,7 +791,7 @@ func warning(message string) {
 	fmt.Print(string(colorYellow) + "[WARNING]: " + message + string(colorReset) + "\n")
 }
 
-func infoGood(prefix string, message string){
+func infoGood(prefix string, message string) {
 	fmt.Print(string(colorGreen) + "[+] " + prefix + string(colorReset) + message + "\n")
 }
 
