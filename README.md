@@ -14,6 +14,7 @@ This is a go1.17.2 application made for quickly filtering out URLs and IP addres
 - Automagically match your targets from an automatically-updated local scopes collection.
 - Use your own scopes file
 - Set "explicit-level" (Parse (all as) wildcards?)
+- Parse advanced wildcards as regex (supports scope filters like `amzn*.example.com` and `dev.*.example.com`)
 - Match IPv4s
 - Match IPv6s
 - Match any valid URL ([RFC 3986](https://www.rfc-editor.org/rfc/rfc3986.html) Compliant)
