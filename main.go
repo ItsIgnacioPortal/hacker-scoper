@@ -89,6 +89,9 @@ Usage examples:
   Example: Manually pick a file, use custom scopes and out-of-scope files, and set explicit-level
   hacker-scoper -f recon-targets.txt -ins inscope -oos noscope.txt -e 2 
 
+Usage notes:
+  If no company and no inscope file are specified, hacker-scoper will look for ".inscope" and ".noscope" files in the current or in parent directories.
+
 List of all possible arguments:
   -c, --company string
       Specify the company name to lookup.
