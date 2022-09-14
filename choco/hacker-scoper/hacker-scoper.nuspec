@@ -3,7 +3,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
   <metadata>
     <id>hacker-scoper</id>
-    <version>2.1.0</version>
+    <version>3.0.0</version>
     <packageSourceUrl>https://github.com/ItsIgnacioPortal/hacker-scoper</packageSourceUrl>
     <owners>ItsIgnacioPortal</owners>
 
