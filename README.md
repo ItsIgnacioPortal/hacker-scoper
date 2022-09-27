@@ -12,17 +12,17 @@ This is a go1.17.2 application made for quickly filtering out URLs and IP addres
 ## Features
 
 - Automagically match your targets from an automatically-updated local scopes collection.
-- Use your own scopes file
+- Use your own scopes file.
 - Set "explicit-level" (Parse (all as) wildcards?)
-- Parse advanced wildcards as regex (supports scope filters like `amzn*.example.com` and `dev.*.example.com`)
+- Parse advanced wildcards as regex (supports scope filters like `amzn*.example.com` and `dev.*.example.com`).
 - Match IPv4s
 - Match IPv6s
 - Match any valid URL ([RFC 3986](https://www.rfc-editor.org/rfc/rfc3986.html) Compliant)
 - Attempt to scrape security.txt files from your targets
-- 100% chainable with other tools: Just use `-ch`/`--chain-mode` to disable the fancy text decorations
-- TLD-Based detection of mis-configured bug-bounty programs: The most common case is bug bounty programs setting apk package names like `com.my.businness.gatewayportal` as web_application resources
+- Easily chainable with other tools. Use `-ch`/`--chain-mode` to disable the fancy text decorations.
+- TLD-Based detection of mis-configured bug-bounty programs: Sometimes, bug bounty programs set apk package names such as `com.my.businness.gatewayportal` as `web_application` resources instead of as `android_application` resources. hacker-scoper will detect that, and alert the user of the mis-configuration.
 - If no company name and no custom files are specified, hacker-scoper will look for `.inscope` and `.noscope` files in the current or parent directories.
-- Save output to a file
+- Save output to a file.
 
 ## Installation
 
