@@ -99,7 +99,7 @@ Usage examples:
   hacker-scoper -f recon-targets.txt -ins inscope -oos noscope.txt -e 2 
 
 Usage notes:
-  If no company and no inscope file are specified, hacker-scoper will look for ".inscope" and ".noscope" files in the current or in parent directories.
+  If no company and no inscope file is specified, hacker-scoper will look for ".inscope" and ".noscope" files in the current or in parent directories.
 
 List of all possible arguments:
   -c, --company string
