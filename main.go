@@ -59,6 +59,7 @@ type Firebounty struct {
 
 var chainMode bool
 var targetsListFilepath string
+var verboseMode bool
 
 const colorReset = "\033[0m"
 const colorYellow = "\033[33m"
@@ -139,6 +140,9 @@ List of all possible arguments:
 
   --version
       Show the installed version
+
+  --verbose
+      Show what scopes were detected for a given company name.
 `
 
 	flag.StringVar(&company, "c", "", "Specify the company name to lookup.")
@@ -161,6 +165,7 @@ List of all possible arguments:
 	flag.StringVar(&inscopeOutputFile, "o", "", "Save the inscope urls to a file")
 	flag.StringVar(&inscopeOutputFile, "output", "", "Save the inscope urls to a file")
 	flag.BoolVar(&showVersion, "version", false, "Show installed version")
+	flag.BoolVar(&verboseMode, "verbose", false, "Show what scopes were detected for a given company name.")
 	//https://www.antoniojgutierrez.com/posts/2021-05-14-short-and-long-options-in-go-flags-pkg/
 	flag.Usage = func() { fmt.Print(usage) }
 	flag.Parse()
@@ -537,6 +542,16 @@ List of all possible arguments:
 					//match found!
 					if !chainMode {
 						fmt.Print("[+] Search for \"" + company + "\" matched the company " + string(colorGreen) + firebountyJSON.Pgms[companyCounter].Name + string(colorReset) + "!\n")
+
+						if verboseMode {
+							myjson, err := json.MarshalIndent(firebountyJSON.Pgms[companyCounter], "", "\t")
+							if err != nil {
+								crash("Unable to unmarshal firebountyJSON into myjson. Try disabling verbose mode.", err)
+							}
+							fmt.Println("[+] This is the JSON object that matched lifeomic: ")
+							fmt.Println(string(myjson))
+						}
+
 					}
 					//for every scope in the program
 					for scopeCounter := 0; scopeCounter < len(firebountyJSON.Pgms[companyCounter].Scopes.In_scopes); scopeCounter++ {
