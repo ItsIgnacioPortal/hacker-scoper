@@ -60,6 +60,7 @@ type Firebounty struct {
 var chainMode bool
 var targetsListFilepath string
 var verboseMode bool
+var includeUnsure bool
 
 const colorReset = "\033[0m"
 const colorYellow = "\033[33m"
@@ -69,6 +70,7 @@ const colorGreen = "\033[38;2;37;255;36m"
 var usedstdin bool
 var inscopeOutputFile string
 var inscopeURLs []string
+var unsureURLs []string
 
 func main() {
 
@@ -143,6 +145,9 @@ List of all possible arguments:
 
   --verbose
       Show what scopes were detected for a given company name.
+
+  -iu, --include-unsure
+      Include "unsure" URLs in the output. An unsure URL is a URL that's not in scope, but is also not out of scope. Very probably unrelated to the bug bounty program.
 `
 
 	flag.StringVar(&company, "c", "", "Specify the company name to lookup.")
@@ -166,6 +171,8 @@ List of all possible arguments:
 	flag.StringVar(&inscopeOutputFile, "output", "", "Save the inscope urls to a file")
 	flag.BoolVar(&showVersion, "version", false, "Show installed version")
 	flag.BoolVar(&verboseMode, "verbose", false, "Show what scopes were detected for a given company name.")
+	flag.BoolVar(&includeUnsure, "iu", false, "Include \"unsure\" URLs in the output. An unsure URL is a URL that's not in scope, but is also not out of scope. Very probably unrelated to the bug bounty program.")
+	flag.BoolVar(&includeUnsure, "include-unsure", false, "Include \"unsure\" URLs in the output. An unsure URL is a URL that's not in scope, but is also not out of scope. Very probably unrelated to the bug bounty program.")
 	//https://www.antoniojgutierrez.com/posts/2021-05-14-short-and-long-options-in-go-flags-pkg/
 	flag.Usage = func() { fmt.Print(usage) }
 	flag.Parse()
@@ -630,26 +637,70 @@ List of all possible arguments:
 	inscopeURLs = removeDuplicateStr(inscopeURLs)
 	sort.Strings(inscopeURLs)
 
-	for i := 0; i < len(inscopeURLs); i++ {
+	if includeUnsure {
+		unsureURLs = removeDuplicateStr(unsureURLs)
+		sort.Strings(unsureURLs)
 
+	unsureURLsloopstart:
+		for i := 0; i < len(unsureURLs); i++ {
+			for j := 0; j < len(inscopeURLs); j++ {
+				if unsureURLs[i] == inscopeURLs[j] {
+					unsureURLs = append(unsureURLs[:i], unsureURLs[i+1:]...)
+					goto unsureURLsloopstart
+				}
+			}
+		}
+
+	}
+
+	//Yes, I could've made this into a function instead of copying the same chunk of code, but it just doesn't make any sense as a function IMO
+	//For each item in inscopeURLs...
+	for i := 0; i < len(inscopeURLs); i++ {
 		if !chainMode {
 			infoGood("IN-SCOPE: ", inscopeURLs[i])
 		} else {
 			fmt.Println(inscopeURLs[i])
 		}
+	}
 
-		if inscopeOutputFile != "" {
-			f, err := os.OpenFile(inscopeOutputFile, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
-			if err != nil {
-				crash("Unable to read output file", err)
+	//For each item in unsureURLs...
+	if includeUnsure {
+		for i := 0; i < len(unsureURLs); i++ {
+			if !chainMode {
+				infoWarning("UNSURE: ", unsureURLs[i])
+			} else {
+				fmt.Println(unsureURLs[i])
 			}
+		}
+	}
 
-			defer f.Close()
+	//Add the URLs into the output file, if the flag has been set
+	if inscopeOutputFile != "" {
 
-			if _, err = f.WriteString(inscopeURLs[i] + "\n"); err != nil {
+		f, err := os.OpenFile(inscopeOutputFile, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+		if err != nil {
+			crash("Unable to read output file", err)
+		}
+
+		for i := 0; i < len(inscopeURLs); i++ {
+			_, err = f.WriteString(inscopeURLs[i] + "\n")
+			if err != nil {
 				crash("Unable to write to output file", err)
 			}
 		}
+
+		//Process unsure URLs
+		if includeUnsure {
+			for i := 0; i < len(unsureURLs); i++ {
+				_, err = f.WriteString(unsureURLs[i] + "\n")
+				if err != nil {
+					crash("Unable to write to output file", err)
+				}
+			}
+		}
+
+		//Close the output file
+		f.Close()
 	}
 	cleanup()
 
@@ -825,6 +876,10 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 					if !isOutOfScope(currentTargetURL, outofScopesListFilepath, nil, firebountyOutOfScopes) {
 						logInScope(scanner.Text())
 					}
+				} else if includeUnsure {
+					if !isOutOfScope(currentTargetURL, outofScopesListFilepath, nil, firebountyOutOfScopes) {
+						logUnsure(scanner.Text())
+					}
 				}
 
 				//we were able to parse the target as a URL
@@ -841,11 +896,19 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 							logInScope(scanner.Text())
 						}
 
+					} else if includeUnsure {
+						if !isOutOfScope(nil, outofScopesListFilepath, targetIp, firebountyOutOfScopes) {
+							logUnsure(scanner.Text())
+						}
 					}
 				} else {
 					if CIDR.Contains(targetIp) {
 						if !isOutOfScope(nil, outofScopesListFilepath, targetIp, firebountyOutOfScopes) {
 							logInScope(scanner.Text())
+						}
+					} else if includeUnsure {
+						if !isOutOfScope(nil, outofScopesListFilepath, targetIp, firebountyOutOfScopes) {
+							logUnsure(scanner.Text())
 						}
 					}
 				}
@@ -864,6 +927,10 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 							logInScope(scanner.Text())
 						}
 
+					} else if includeUnsure {
+						if !isOutOfScope(currentTargetURL, outofScopesListFilepath, nil, firebountyOutOfScopes) {
+							logUnsure(scanner.Text())
+						}
 					}
 				} else {
 					if removePortFromHost(currentTargetURL) == scopeURL.Host {
@@ -871,6 +938,10 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 							logInScope(scanner.Text())
 						}
 
+					} else if includeUnsure {
+						if !isOutOfScope(currentTargetURL, outofScopesListFilepath, nil, firebountyOutOfScopes) {
+							logUnsure(scanner.Text())
+						}
 					}
 				}
 
@@ -921,6 +992,10 @@ func warning(message string) {
 
 func infoGood(prefix string, message string) {
 	fmt.Print(string(colorGreen) + "[+] " + prefix + string(colorReset) + message + "\n")
+}
+
+func infoWarning(prefix string, message string) {
+	fmt.Print(string(colorYellow) + "[+] " + prefix + string(colorReset) + message + "\n")
 }
 
 func removePortFromHost(url *url.URL) string {
@@ -1100,6 +1175,10 @@ func cleanup() {
 
 func logInScope(url string) {
 	inscopeURLs = append(inscopeURLs, url)
+}
+
+func logUnsure(url string) {
+	unsureURLs = append(inscopeURLs, url)
 }
 
 func removeDuplicateStr(strSlice []string) []string {

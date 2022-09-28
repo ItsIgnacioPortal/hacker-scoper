@@ -1,5 +1,5 @@
 DONE - Add **Verbose** (`-v, --verbose`) flag that will show what scopes were detected in firebounty/hackerone, etc. This option is incompatible with chain-mode.
-- Add **UNSURE**: If a url is not within scope, but also not outside of the scope, report it as _UNSURE_. These urls will not be included when using chain-mode, unless `-iu / --include-unsure`
+DONE - Add **UNSURE**: If a URL is not within scope, but also not outside of the scope, report it as _UNSURE_. Set `-iu / --include-unsure` to enable.
 - Add **Allow user to select a company when there's multiple matches for the same company name**
 - Add **BBaaS API private program scope query**: If a company wasn't found on firebounty, ask the user for an API key. 
 	"Do you want to add a HackerOne API Key to get private bug-bounty program scopes? ([Yes]/No/Later): "
