@@ -6,14 +6,14 @@
 	"Do you want to add a HackerOne API Key to get private bug-bounty program scopes? ([Yes]/No/Later): "
 	If "No" is selected, allow user to register an API key later, using `--hackerone API_KEY`, `--bugcrowd API_KEY`, `--intigriti API_KEY`, etc
 	List of Bug-Bounty as a Service platforms (BBaaS): 
-	- bugcrowd.com
-	- hackerone.com
-	- hackenproof.com
-	- intigriti.com
-	- openbugbounty.com
-	- yeswehack.com
-	- bugbounty.jp
-	- federacy.com
+	- [ ] bugcrowd.com
+	- [ ] hackerone.com
+	- [ ] hackenproof.com
+	- [ ] intigriti.com
+	- [ ] openbugbounty.com
+	- [ ] yeswehack.com
+	- [ ] bugbounty.jp
+	- [ ] federacy.com
 - [ ] Add **Domains-only output** 
 - [ ] Add **Output ignore user/pass**: Remove duplicates ignoring the URL username/password
 - [ ] Add **Output ignore protocol**:  Remove duplicates ignoring the URL protocol
