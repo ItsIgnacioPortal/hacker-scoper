@@ -45,14 +45,14 @@ Download a pre-built binary from [the releases page](https://github.com/ItsIgnac
 ## Usage
 
 ### Demo with company lookup 
-[![asciicast](https://asciinema.org/a/fKXTmmbtNPqKQmn3CrAaXNTB3.svg)](https://asciinema.org/a/fKXTmmbtNPqKQmn3CrAaXNTB3)
+[![asciicast](https://asciinema.org/a/WMeGitIu0VEjaFQrbv45fjhJG.svg)](https://asciinema.org/a/WMeGitIu0VEjaFQrbv45fjhJG)
 <br>
 <br>
 <br>
 <br>
 
 ### Demo with custom scopes file
-[![asciicast](https://asciinema.org/a/N8hohdAxM9cM0RkC6ptHFJygE.svg)](https://asciinema.org/a/N8hohdAxM9cM0RkC6ptHFJygE)
+[![asciicast](https://asciinema.org/a/SWtH3kLbEOmyPzrGFQe9ic9BB.svg)](https://asciinema.org/a/SWtH3kLbEOmyPzrGFQe9ic9BB)
 
 ```
 Usage: hacker-scoper --file /path/to/targets [--company company | --custom-inscopes-file /path/to/inscopes [--custom-outofcopes-file] /path/to/outofscopes] [--explicit-level INT] [--reuse Y/N] [--chain-mode] [--fire /path/to/firebounty.json]
@@ -127,7 +127,7 @@ ads.example.com
 192.168.2.8
 ```
 
-Custom scopes file example:
+Custom .inscope file example:
 ```powershell
 *.example.com
 *.sub.domain.example.com
@@ -138,7 +138,7 @@ FE80::0202:B3FF:FE1E:8329
 FE80::0204:B3FF::/24
 ```
 
-Custom out-of-scope file example:
+Custom .noscope file example:
 ```javascript
 community.example.com
 thirdparty.example.com
