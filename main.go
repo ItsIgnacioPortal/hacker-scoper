@@ -537,61 +537,52 @@ List of all possible arguments:
 				crash("Couldn't parse firebountyJSON into pre-defined struct.", err)
 			}
 
-			firebountyQueryReturnedResults := false
+			var matchingCompanyList [][]string
+			var userChoice string
+			var userPickedInvalidChoice bool = true
+			var userChoiceAsInt int
 
 			//for every company...
 			for companyCounter := 0; companyCounter < len(firebountyJSON.Pgms); companyCounter++ {
 				fcompany := strings.ToLower(firebountyJSON.Pgms[companyCounter].Name)
 				if strings.Contains(fcompany, company) {
+					matchingCompanyList = append(matchingCompanyList, []string{strconv.Itoa(companyCounter), firebountyJSON.Pgms[companyCounter].Name})
+				}
+			}
 
+			for userPickedInvalidChoice {
+				for i := 0; i < len(matchingCompanyList); i++ {
+					fmt.Println("    " + strconv.Itoa(i) + " - " + matchingCompanyList[i][1])
+				}
+				fmt.Println("    " + strconv.Itoa(len(matchingCompanyList)) + " - COMBINE ALL")
+				fmt.Print("\n[+] Multiple companies matched \"" + company + "\". Please choose one: ")
+				fmt.Scanln(&userChoice)
+
+				userChoiceAsInt, err = strconv.Atoi(userChoice)
+				if err != nil {
+					warning("Invalid option selected!")
+				} else {
+					userPickedInvalidChoice = false
+				}
+
+			}
+			fmt.Println("[-] If you want to remove one of these options, feel free to modify your firebounty database: " + firebountyJSONPath + "\n")
+
+			firebountyQueryReturnedResults := false
+
+			if userChoiceAsInt == len(matchingCompanyList) {
+				//for every company...
+				for i := 0; i < len(matchingCompanyList); i++ {
 					firebountyQueryReturnedResults = true
 
-					//match found!
-					if !chainMode {
-						fmt.Print("[+] Search for \"" + company + "\" matched the company " + string(colorGreen) + firebountyJSON.Pgms[companyCounter].Name + string(colorReset) + "!\n")
-
-						if verboseMode {
-							myjson, err := json.MarshalIndent(firebountyJSON.Pgms[companyCounter], "", "\t")
-							if err != nil {
-								crash("Unable to unmarshal firebountyJSON into myjson. Try disabling verbose mode.", err)
-							}
-							fmt.Println("[+] This is the JSON object that matched lifeomic: ")
-							fmt.Println(string(myjson))
-						}
-
-					}
-					//for every scope in the program
-					for scopeCounter := 0; scopeCounter < len(firebountyJSON.Pgms[companyCounter].Scopes.In_scopes); scopeCounter++ {
-						//if the scope type is "web_application" and it's not empty
-						if firebountyJSON.Pgms[companyCounter].Scopes.In_scopes[scopeCounter].Scope_type == "web_application" && firebountyJSON.Pgms[companyCounter].Scopes.In_scopes[scopeCounter].Scope != "" {
-
-							scope := firebountyJSON.Pgms[companyCounter].Scopes.In_scopes[scopeCounter].Scope
-
-							if !chainMode {
-								//attempt to parse current target as an IP
-								var currentTargetURL *url.URL
-								currentTargetURL, err = url.Parse(scope)
-
-								//If we couldn't parse it as is, attempt to add the "https://" prefix
-								if err != nil || currentTargetURL.Host == "" {
-									currentTargetURL, _ = url.Parse("https://" + scope)
-								}
-
-								portlessHostofCurrentTarget := removePortFromHost(currentTargetURL)
-
-								//alert the user about potentially mis-configured bug-bounty program
-								_, scopeHasValidTLD := publicsuffix.PublicSuffix(portlessHostofCurrentTarget)
-
-								if !scopeHasValidTLD && currentTargetURL.Host != "" {
-									warning("\"" + scope + "\". Does not have a public Top Level Domain (TLD). This may be a sign of a misconfigured bug bounty program. Consider editing the \"" + firebountyJSONPath + " file and removing the faulty entries. Also, report the failure to the mainters of the bug bounty program.")
-								}
-							}
-
-							parseScopesWrapper(scope, explicitLevel, targetsListFilepath, outofScopesListFilepath, firebountyJSON.Pgms[companyCounter].Scopes.Out_of_scopes)
-
-						}
-					}
+					companyIndex, _ := strconv.Atoi(matchingCompanyList[i][0])
+					parseCompany(company, firebountyJSON, companyIndex, explicitLevel, outofScopesListFilepath)
 				}
+			} else {
+				firebountyQueryReturnedResults = true
+
+				companyCounter, _ := strconv.Atoi(matchingCompanyList[userChoiceAsInt][0])
+				parseCompany(company, firebountyJSON, companyCounter, explicitLevel, outofScopesListFilepath)
 			}
 
 			if !firebountyQueryReturnedResults && !chainMode {
@@ -1191,4 +1182,52 @@ func removeDuplicateStr(strSlice []string) []string {
 		}
 	}
 	return list
+}
+
+func parseCompany(company string, firebountyJSON Firebounty, companyCounter int, explicitLevel int, outofScopesListFilepath string) {
+	//match found!
+	if !chainMode {
+		fmt.Print("[+] Search for \"" + company + "\" matched the company " + string(colorGreen) + firebountyJSON.Pgms[companyCounter].Name + string(colorReset) + "!\n")
+
+		if verboseMode {
+			myjson, err := json.MarshalIndent(firebountyJSON.Pgms[companyCounter], "", "\t")
+			if err != nil {
+				crash("Unable to unmarshal firebountyJSON into myjson. Try disabling verbose mode.", err)
+			}
+			fmt.Println("[+] This is the JSON object that matched lifeomic: ")
+			fmt.Println(string(myjson))
+		}
+
+	}
+	//for every scope in the program
+	for scopeCounter := 0; scopeCounter < len(firebountyJSON.Pgms[companyCounter].Scopes.In_scopes); scopeCounter++ {
+		//if the scope type is "web_application" and it's not empty
+		if firebountyJSON.Pgms[companyCounter].Scopes.In_scopes[scopeCounter].Scope_type == "web_application" && firebountyJSON.Pgms[companyCounter].Scopes.In_scopes[scopeCounter].Scope != "" {
+
+			scope := firebountyJSON.Pgms[companyCounter].Scopes.In_scopes[scopeCounter].Scope
+
+			if !chainMode {
+				//attempt to parse current target as an IP
+				var currentTargetURL *url.URL
+				currentTargetURL, err := url.Parse(scope)
+
+				//If we couldn't parse it as is, attempt to add the "https://" prefix
+				if err != nil || currentTargetURL.Host == "" {
+					currentTargetURL, _ = url.Parse("https://" + scope)
+				}
+
+				portlessHostofCurrentTarget := removePortFromHost(currentTargetURL)
+
+				//alert the user about potentially mis-configured bug-bounty program
+				_, scopeHasValidTLD := publicsuffix.PublicSuffix(portlessHostofCurrentTarget)
+
+				if !scopeHasValidTLD && currentTargetURL.Host != "" {
+					warning("\"" + scope + "\". Does not have a public Top Level Domain (TLD). This may be a sign of a misconfigured bug bounty program. Consider editing the \"" + firebountyJSONPath + " file and removing the faulty entries. Also, report the failure to the mainters of the bug bounty program.")
+				}
+			}
+
+			parseScopesWrapper(scope, explicitLevel, targetsListFilepath, outofScopesListFilepath, firebountyJSON.Pgms[companyCounter].Scopes.Out_of_scopes)
+
+		}
+	}
 }
