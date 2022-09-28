@@ -550,37 +550,50 @@ List of all possible arguments:
 				}
 			}
 
+			//appearently "while" doesn't exist in Go. It has been replaced by "for"
 			for userPickedInvalidChoice {
+				//For every matchingCompanyList item...
 				for i := 0; i < len(matchingCompanyList); i++ {
+					//Print it
 					fmt.Println("    " + strconv.Itoa(i) + " - " + matchingCompanyList[i][1])
 				}
+
+				//Show user the option to combine all of the previous companies as if they were a single company
 				fmt.Println("    " + strconv.Itoa(len(matchingCompanyList)) + " - COMBINE ALL")
+
+				//Get userchoice
 				fmt.Print("\n[+] Multiple companies matched \"" + company + "\". Please choose one: ")
 				fmt.Scanln(&userChoice)
 
+				//Convert userchoice str -> int
 				userChoiceAsInt, err = strconv.Atoi(userChoice)
+				//If the user picked something invalid...
 				if err != nil {
 					warning("Invalid option selected!")
 				} else {
 					userPickedInvalidChoice = false
 				}
-
 			}
+
+			//tip
 			fmt.Println("[-] If you want to remove one of these options, feel free to modify your firebounty database: " + firebountyJSONPath + "\n")
 
 			firebountyQueryReturnedResults := false
 
+			//If the user chose to "COMBINE ALL"...
 			if userChoiceAsInt == len(matchingCompanyList) {
-				//for every company...
+				//for every company that matched the company query...
 				for i := 0; i < len(matchingCompanyList); i++ {
 					firebountyQueryReturnedResults = true
 
+					//Load the matchingCompanyList 2D slice, and convert the first member from string to integer, and save the company index
 					companyIndex, _ := strconv.Atoi(matchingCompanyList[i][0])
 					parseCompany(company, firebountyJSON, companyIndex, explicitLevel, outofScopesListFilepath)
 				}
 			} else {
 				firebountyQueryReturnedResults = true
 
+				//Use userChoiceAsInt as an index for the matchingCompanyList 2D slice, and save the company index
 				companyCounter, _ := strconv.Atoi(matchingCompanyList[userChoiceAsInt][0])
 				parseCompany(company, firebountyJSON, companyCounter, explicitLevel, outofScopesListFilepath)
 			}
@@ -654,8 +667,8 @@ List of all possible arguments:
 		}
 	}
 
-	//For each item in unsureURLs...
 	if includeUnsure {
+		//for each unsureURLs item...
 		for i := 0; i < len(unsureURLs); i++ {
 			if !chainMode {
 				infoWarning("UNSURE: ", unsureURLs[i])
@@ -673,7 +686,9 @@ List of all possible arguments:
 			crash("Unable to read output file", err)
 		}
 
+		//for each inscopeURLs item...
 		for i := 0; i < len(inscopeURLs); i++ {
+			//write it to the output file
 			_, err = f.WriteString(inscopeURLs[i] + "\n")
 			if err != nil {
 				crash("Unable to write to output file", err)
@@ -682,7 +697,9 @@ List of all possible arguments:
 
 		//Process unsure URLs
 		if includeUnsure {
+			//for each unsureURLs item...
 			for i := 0; i < len(unsureURLs); i++ {
+				//write it to the output file
 				_, err = f.WriteString(unsureURLs[i] + "\n")
 				if err != nil {
 					crash("Unable to write to output file", err)
