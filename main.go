@@ -503,7 +503,7 @@ List of all possible arguments:
 				yesterday := time.Now().Add(-24 * time.Hour)
 				if firebountyJSONFileStats.ModTime().Before(yesterday) {
 					if !chainMode {
-						fmt.Println("[INFO]: 24hs have passed since the last update to the scopes file. Updating...")
+						fmt.Println("[INFO]: +24hs have passed since the last update to the local firebounty database. Updating...")
 					}
 					updateFireBountyJSON()
 				}
