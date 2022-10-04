@@ -652,6 +652,7 @@ List of all possible arguments:
 		unsureURLs = removeDuplicateStr(unsureURLs)
 		sort.Strings(unsureURLs)
 
+		//If a URL is in inscopeURLs and unsureURLs, remove it from unsureURLs
 	unsureURLsloopstart:
 		for i := 0; i < len(unsureURLs); i++ {
 			for j := 0; j < len(inscopeURLs); j++ {
@@ -703,7 +704,7 @@ List of all possible arguments:
 		}
 
 		//Process unsure URLs
-		if includeUnsure {
+		if includeUnsure && unsureURLs != nil {
 			//for each unsureURLs item...
 			for i := 0; i < len(unsureURLs); i++ {
 				//write it to the output file
@@ -942,7 +943,7 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 								logInScope(scanner.Text())
 							}
 						}
-					} else if includeUnsure {
+					} else if includeUnsure && targetIp.String() != "<nil>" {
 						if !isOutOfScope(nil, outofScopesListFilepath, targetIp, firebountyOutOfScopes) {
 							if outputDomainsOnly {
 								logUnsure(targetIp.String())
