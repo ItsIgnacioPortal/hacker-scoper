@@ -71,6 +71,7 @@ var usedstdin bool
 var inscopeOutputFile string
 var inscopeURLs []string
 var unsureURLs []string
+var outputDomainsOnly bool
 
 func main() {
 
@@ -137,17 +138,21 @@ List of all possible arguments:
   --fire string
       Set this to specify a path for the FireBounty JSON.
 
+  -iu, --include-unsure
+      Include "unsure" URLs in the output. An unsure URL is a URL that's not in scope, but is also not out of scope. Very probably unrelated to the bug bounty program.
+
   -o, --output string
       Save the inscope urls to a file
 
-  --version
-      Show the installed version
+  -ho, --hostnames-only
+      Output only hostnames instead of the full URLs
 
   --verbose
       Show what scopes were detected for a given company name.
 
-  -iu, --include-unsure
-      Include "unsure" URLs in the output. An unsure URL is a URL that's not in scope, but is also not out of scope. Very probably unrelated to the bug bounty program.
+  --version
+      Show the installed version
+
 `
 
 	flag.StringVar(&company, "c", "", "Specify the company name to lookup.")
@@ -173,6 +178,8 @@ List of all possible arguments:
 	flag.BoolVar(&verboseMode, "verbose", false, "Show what scopes were detected for a given company name.")
 	flag.BoolVar(&includeUnsure, "iu", false, "Include \"unsure\" URLs in the output. An unsure URL is a URL that's not in scope, but is also not out of scope. Very probably unrelated to the bug bounty program.")
 	flag.BoolVar(&includeUnsure, "include-unsure", false, "Include \"unsure\" URLs in the output. An unsure URL is a URL that's not in scope, but is also not out of scope. Very probably unrelated to the bug bounty program.")
+	flag.BoolVar(&outputDomainsOnly, "ho", false, "Output only domains instead of the full URLs")
+	flag.BoolVar(&outputDomainsOnly, "hostnames-only", false, "Output only domains instead of the full URLs")
 	//https://www.antoniojgutierrez.com/posts/2021-05-14-short-and-long-options-in-go-flags-pkg/
 	flag.Usage = func() { fmt.Print(usage) }
 	flag.Parse()
@@ -882,11 +889,20 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 				//if the current target host matches the regex...
 				if scopeRegex.MatchString(removePortFromHost(currentTargetURL)) {
 					if !isOutOfScope(currentTargetURL, outofScopesListFilepath, nil, firebountyOutOfScopes) {
-						logInScope(scanner.Text())
+						if outputDomainsOnly {
+							logInScope(currentTargetURL.Hostname())
+						} else {
+							logInScope(scanner.Text())
+						}
+
 					}
 				} else if includeUnsure {
 					if !isOutOfScope(currentTargetURL, outofScopesListFilepath, nil, firebountyOutOfScopes) {
-						logUnsure(scanner.Text())
+						if outputDomainsOnly {
+							logUnsure(currentTargetURL.Hostname())
+						} else {
+							logUnsure(scanner.Text())
+						}
 					}
 				}
 
@@ -901,22 +917,38 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 					//Couldn't parse scope as CIDR range, retrying as ip match")
 					if targetIp.String() == scopeIP.String() {
 						if !isOutOfScope(nil, outofScopesListFilepath, targetIp, firebountyOutOfScopes) {
-							logInScope(scanner.Text())
+							if outputDomainsOnly {
+								logInScope(targetIp.String())
+							} else {
+								logInScope(scanner.Text())
+							}
 						}
 
 					} else if includeUnsure {
 						if !isOutOfScope(nil, outofScopesListFilepath, targetIp, firebountyOutOfScopes) {
-							logUnsure(scanner.Text())
+							if outputDomainsOnly {
+								logUnsure(targetIp.String())
+							} else {
+								logUnsure(scanner.Text())
+							}
 						}
 					}
 				} else {
 					if CIDR.Contains(targetIp) {
 						if !isOutOfScope(nil, outofScopesListFilepath, targetIp, firebountyOutOfScopes) {
-							logInScope(scanner.Text())
+							if outputDomainsOnly {
+								logInScope(targetIp.String())
+							} else {
+								logInScope(scanner.Text())
+							}
 						}
 					} else if includeUnsure {
 						if !isOutOfScope(nil, outofScopesListFilepath, targetIp, firebountyOutOfScopes) {
-							logUnsure(scanner.Text())
+							if outputDomainsOnly {
+								logUnsure(targetIp.String())
+							} else {
+								logUnsure(scanner.Text())
+							}
 						}
 					}
 				}
@@ -932,23 +964,39 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 					//we DON'T do it by splitting on dots and matching, because that would cause errors with domains that have two top-level-domains (gov.br for example)
 					if strings.HasSuffix(removePortFromHost(currentTargetURL), scopeURL.Host) {
 						if !isOutOfScope(currentTargetURL, outofScopesListFilepath, nil, firebountyOutOfScopes) {
-							logInScope(scanner.Text())
+							if outputDomainsOnly {
+								logInScope(currentTargetURL.Hostname())
+							} else {
+								logInScope(scanner.Text())
+							}
 						}
 
 					} else if includeUnsure {
 						if !isOutOfScope(currentTargetURL, outofScopesListFilepath, nil, firebountyOutOfScopes) {
-							logUnsure(scanner.Text())
+							if outputDomainsOnly {
+								logUnsure(currentTargetURL.Hostname())
+							} else {
+								logUnsure(scanner.Text())
+							}
 						}
 					}
 				} else {
 					if removePortFromHost(currentTargetURL) == scopeURL.Host {
 						if !isOutOfScope(currentTargetURL, outofScopesListFilepath, nil, firebountyOutOfScopes) {
-							logInScope(scanner.Text())
+							if outputDomainsOnly {
+								logInScope(currentTargetURL.Hostname())
+							} else {
+								logInScope(scanner.Text())
+							}
 						}
 
 					} else if includeUnsure {
 						if !isOutOfScope(currentTargetURL, outofScopesListFilepath, nil, firebountyOutOfScopes) {
-							logUnsure(scanner.Text())
+							if outputDomainsOnly {
+								logUnsure(currentTargetURL.Hostname())
+							} else {
+								logUnsure(scanner.Text())
+							}
 						}
 					}
 				}

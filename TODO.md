@@ -14,11 +14,7 @@
 	- [ ] yeswehack.com
 	- [ ] bugbounty.jp
 	- [ ] federacy.com
-- [ ] Add **Domains-only output** 
-- [ ] Add **Output ignore user/pass**: Remove duplicates ignoring the URL username/password
-- [ ] Add **Output ignore protocol**:  Remove duplicates ignoring the URL protocol
-- [ ] Add **Output ignore segment**:   Remove duplicates ignoring the URL segment
-- [ ] Add **Output ignore path**:      Remove duplicates ignoring the URL path
+- [X] Add **Hostname-only output** 
 - [ ] Add **Reverse matching**: `-r, --reverse` only show out-of-scope items
 
 REFERENCE: https://github.com/root4loot/rescope#features
