@@ -15,7 +15,7 @@
 	- [ ] bugbounty.jp
 	- [ ] federacy.com
 - [X] Add **Hostname-only output** 
-- [ ] Put the usage options in a fancy table on the README.
+- [X] Put the usage options in a fancy table on the README.
 - [ ] Add Unit Tests
 - [ ] Add fully automated chocolatey releases
 - [ ] If the company name didn't match firebounty, nor any BBaaS platform scope, attempt to get the scope using an ASN
