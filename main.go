@@ -87,7 +87,7 @@ func main() {
 
 	version = "v3.0.0"
 
-	const usage = `Usage: hacker-scoper --file /path/to/targets [--company company | --custom-inscopes-file /path/to/inscopes [--custom-outofcopes-file] /path/to/outofscopes] [--explicit-level INT] [--reuse Y/N] [--chain-mode] [--fire /path/to/firebounty.json]
+	const usage = `Usage: hacker-scoper --file /path/to/targets [--company company | --custom-inscopes-file /path/to/inscopes [--custom-outofcopes-file /path/to/outofscopes] [--verbose]] [--explicit-level INT] [--reuse Y/N] [--chain-mode] [--fire /path/to/firebounty.json] [--include-unsure] [--output /path/to/outputfile] [--hostnames-only]
 
 Usage examples:
   Example: Cat a file, and lookup scopes on firebounty
