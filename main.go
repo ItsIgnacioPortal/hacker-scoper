@@ -66,6 +66,7 @@ const colorReset = "\033[0m"
 const colorYellow = "\033[33m"
 const colorRed = "\033[38;2;255;0;0m"
 const colorGreen = "\033[38;2;37;255;36m"
+const colorBlue = "\033[38;2;0;204;255m"
 
 var usedstdin bool
 var inscopeOutputFile string
@@ -87,25 +88,25 @@ func main() {
 
 	version = "v3.0.0"
 
-	const usage = `Usage: hacker-scoper --file /path/to/targets [--company company | --custom-inscopes-file /path/to/inscopes [--custom-outofcopes-file /path/to/outofscopes] [--verbose]] [--explicit-level INT] [--reuse Y/N] [--chain-mode] [--fire /path/to/firebounty.json] [--include-unsure] [--output /path/to/outputfile] [--hostnames-only]
+	const usage = colorBlue + `Usage:` + colorReset + ` hacker-scoper --file /path/to/targets [--company company | --custom-inscopes-file /path/to/inscopes [--custom-outofcopes-file /path/to/outofscopes] [--verbose]] [--explicit-level INT] [--reuse Y/N] [--chain-mode] [--fire /path/to/firebounty.json] [--include-unsure] [--output /path/to/outputfile] [--hostnames-only]
 
-Usage examples:
+` + colorBlue + `Usage examples:` + colorReset + `
   Example: Cat a file, and lookup scopes on firebounty
-  cat recon-targets.txt | hacker-scoper -c google
+  ` + colorGreen + `cat recon-targets.txt | hacker-scoper -c google` + colorReset + `
 
   Example: Cat a file, and use the .inscope & .noscope files
-  cat recon-targets.txt | hacker-scoper
+  ` + colorGreen + `cat recon-targets.txt | hacker-scoper` + colorReset + `
 
   Example: Manually pick a file, lookup scopes on firebounty, and set explicit-level
-  hacker-scoper -f recon-targets.txt -c google -e 2
+  ` + colorGreen + `hacker-scoper -f recon-targets.txt -c google -e 2` + colorReset + `
 
   Example: Manually pick a file, use custom scopes and out-of-scope files, and set explicit-level
-  hacker-scoper -f recon-targets.txt -ins inscope -oos noscope.txt -e 2 
+  ` + colorGreen + `hacker-scoper -f recon-targets.txt -ins inscope -oos noscope.txt -e 2 ` + colorReset + `
 
-Usage notes:
+` + colorBlue + `Usage notes:` + colorReset + `
   If no company and no inscope file is specified, hacker-scoper will look for ".inscope" and ".noscope" files in the current or in parent directories.
 
-List of all possible arguments:
+` + colorBlue + `List of all possible arguments:` + colorReset + `
   -c, --company string
       Specify the company name to lookup.
 
