@@ -54,7 +54,6 @@ Download a pre-built binary from [the releases page](https://github.com/ItsIgnac
 ### Demo with custom scopes file
 [![asciicast](https://asciinema.org/a/SWtH3kLbEOmyPzrGFQe9ic9BB.svg)](https://asciinema.org/a/SWtH3kLbEOmyPzrGFQe9ic9BB)
 
-```
 Usage: hacker-scoper --file /path/to/targets [--company company | --custom-inscopes-file /path/to/inscopes [--custom-outofcopes-file] /path/to/outofscopes] [--explicit-level INT] [--reuse Y/N] [--chain-mode] [--fire /path/to/firebounty.json]
 
 Usage examples:
@@ -74,44 +73,22 @@ Usage notes:
   If no company and no inscope file are specified, hacker-scoper will look for ".inscope" and ".noscope" files in the current or in parent directories.
 
 List of all possible arguments:
-  -c, --company string
-      Specify the company name to lookup.
-
-  -cstxt, --check-security-txt
-      Whether or not we will try to scrape security.txt from all domains and subdomains (Warning: experimental feature.)
-
-  -r, --reuse string
-      Reuse previously generated security.txt lists? (Y/N)
-	  Only needed if using "-cstxt"
-
-  -f, --file string
-      Path to your file containing URLs
-
-  -ins, --inscope-file string
-      Path to a custom plaintext file containing scopes
-
-  -oos, --outofcope-file string
-      Path to a custom plaintext file containing scopes exclusions
-
-  -e, --explicit-level int
-      How explicit we expect the scopes to be:
-       1 (default): Include subdomains in the scope even if there's not a wildcard in the scope
-       2: Include subdomains in the scope only if there's a wildcard in the scope
-       3: Include subdomains in the scope only if they are explicitly within the scope 
-
-  -ch, --chain-mode
-      In "chain-mode" we only output the important information. No decorations.
-	    Default: false
-	
-  --fire string
-      Set this to specify a path for the FireBounty JSON.
-
-  -o, --output string
-      Save the inscope urls to a file
-
-  --version
-      Show the installed version
-```
+| Short | Long | Description |
+|-------|------|-------------|
+| -c | --company |  Specify the company name to lookup. |
+| -cstxt | --check-security-txt |  Whether or not we will try to scrape security.txt from all domains and subdomains (Warning: experimental feature.) |
+| -r | --reuse |  Reuse previously generated security.txt lists? (Y/N). Only needed if using "-cstxt" |
+| -f | --file |  Path to your file containing URLs |
+| -ins | --inscope-file |  Path to a custom plaintext file containing scopes |
+| -oos | --outofcope-file |  Path to a custom plaintext file containing scopes exclusions |
+| -e | --explicit-level int |  How explicit we expect the scopes to be:    <br> 1 (default): Include subdomains in the scope even if there's not a wildcard in the scope    <br> 2: Include subdomains in the scope only if there's a wildcard in the scope    <br> 3: Include subdomains in the scope only if they are explicitly within the scope |
+| -ch | --chain-mode |  In "chain-mode" we only output the important information. No decorations.. Default: false |
+| --fire |  Set this to specify a path for the FireBounty JSON. |
+| -iu | --include-unsure |  Include "unsure" URLs in the output. An unsure URL is a URL that's not in scope, but is also not out of scope. Very probably unrelated to the bug bounty program. |
+| -o | --output |  Save the inscope urls to a file |
+| -ho | --hostnames-only |  Output only hostnames instead of the full URLs |
+| --verbose |  | Show what scopes were detected for a given company name. |
+| --version |  | Show the installed version |
 
 The firebounty json is automatically updated every 24hs
 
