@@ -17,12 +17,12 @@
 - [X] Add **Hostname-only output** 
 
 REFERENCE: https://github.com/root4loot/rescope#features
-- [ ] Add **Combine private and public scopes**
-- [ ] Add **Resolves conflicting includes/excludes**
-- [ ] Put the usage options in a fancy table on the README.
-- [ ] Add **Define multiple inscopes sources and combine them**
 - [ ] Add **Define private scopes by copy/pasting target definitions from pretty much anywhere**
+- [ ] Put the usage options in a fancy table on the README.
 - [ ] Add Unit Tests
 - [ ] Add fully automated chocolatey releases
 - [ ] If the company name didn't match firebounty, nor any BBaaS platform scope, attempt to get the scope using an ASN
 - [ ] Improve the _Attempt to scrape security.txt files from your targets_ feature
+- [ ] Add **Combine private and public scopes**
+- [ ] Add **Resolves conflicting includes/excludes**
+- [ ] Add **Define multiple inscopes sources and combine them**
