@@ -56,23 +56,22 @@ Download a pre-built binary from [the releases page](https://github.com/ItsIgnac
 
 Usage: hacker-scoper --file /path/to/targets [--company company | --custom-inscopes-file /path/to/inscopes [--custom-outofcopes-file] /path/to/outofscopes] [--explicit-level INT] [--reuse Y/N] [--chain-mode] [--fire /path/to/firebounty.json]
 
-Usage examples:
-  Example: Cat a file, and lookup scopes on firebounty
-  cat recon-targets.txt | hacker-scoper -c google
+### Usage examples:
+- Example: Cat a file, and lookup scopes on firebounty    
+  `cat recon-targets.txt | hacker-scoper -c google`
 
-  Example: Cat a file, and use the .inscope & .noscope files
-  cat recon-targets.txt | hacker-scoper
+- Example: Cat a file, and use the .inscope & .noscope files    
+  `cat recon-targets.txt | hacker-scoper`
 
-  Example: Manually pick a file, lookup scopes on firebounty, and set explicit-level
-  hacker-scoper -f recon-targets.txt -c google -e 2
+- Example: Manually pick a file, lookup scopes on firebounty, and set explicit-level    
+  `hacker-scoper -f recon-targets.txt -c google -e 2`
 
-  Example: Manually pick a file, use custom scopes and out-of-scope files, and set explicit-level
-  hacker-scoper -f recon-targets.txt -ins inscope -oos noscope.txt -e 2 
+- Example: Manually pick a file, use custom scopes and out-of-scope files, and set explicit-level    
+  `hacker-scoper -f recon-targets.txt -ins inscope -oos noscope.txt -e 2`
 
-Usage notes:
-  If no company and no inscope file are specified, hacker-scoper will look for ".inscope" and ".noscope" files in the current or in parent directories.
+**Usage notes:** If no company and no inscope file are specified, hacker-scoper will look for ".inscope" and ".noscope" files in the current or in parent directories.
 
-List of all possible arguments:
+### Table of all possible arguments:
 | Short | Long | Description |
 |-------|------|-------------|
 | -c | --company |  Specify the company name to lookup. |
@@ -90,10 +89,8 @@ List of all possible arguments:
 | --verbose |  | Show what scopes were detected for a given company name. |
 | --version |  | Show the installed version |
 
-The firebounty json is automatically updated every 24hs
-
 list example:
-```powershell
+```javascript
 example.com
 dev.example.com
 1.dev.example.com
@@ -105,9 +102,10 @@ ads.example.com
 ```
 
 Custom .inscope file example:
-```powershell
+```javascript
 *.example.com
 *.sub.domain.example.com
+amzn*.domain.example.com
 192.168.1.10
 192.168.2.1/24
 FE80:0000:0000:0000:0202:B3FF:FE1E:8329
@@ -120,6 +118,7 @@ Custom .noscope file example:
 community.example.com
 thirdparty.example.com
 *.thirdparty.example.com
+dev.*.example.com
 192.168.2.254
 FE80::0202:B3FF:FE1E:8330
 ```
