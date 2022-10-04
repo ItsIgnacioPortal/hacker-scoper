@@ -15,7 +15,6 @@
 	- [ ] bugbounty.jp
 	- [ ] federacy.com
 - [X] Add **Hostname-only output** 
-- [ ] Add **Reverse matching**: `-r, --reverse` only show out-of-scope items
 
 REFERENCE: https://github.com/root4loot/rescope#features
 - [ ] Add **Combine private and public scopes**
