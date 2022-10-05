@@ -1,6 +1,6 @@
 echo $pwd
-$pwd
 $originaldir = (pwd).path
+echo $(tree)
 
 echo 'Downloading the releases file...'
 Invoke-WebRequest -Uri https://api.github.com/repos/itsignacioportal/hacker-scoper/releases/latest -OutFile $env:TEMP\releases.json
@@ -39,6 +39,8 @@ $version = $version -replace '"',''
 
 echo 'Preparing Chocolatey file...'
 cd $originaldir
+echo $pwd
+tree
 Copy-Item hacker-scoper\choco\chocolateyinstall_template.ps1 hacker-scoper\choco\hacker-scoper\tools\chocolateyinstall.ps1
 $filePath = "hacker-scoper\choco\hacker-scoper\tools\chocolateyinstall.ps1"
 (Get-Content $filePath).Replace("VERSIONHERE",$version) | Set-Content $filePath
