@@ -42,11 +42,11 @@ cd $originaldir
 echo $pwd
 tree
 Copy-Item choco\chocolateyinstall_template.ps1 choco\hacker-scoper\tools\chocolateyinstall.ps1
-$filePath = "hacker-scoper\choco\hacker-scoper\tools\chocolateyinstall.ps1"
+$filePath = "choco\hacker-scoper\tools\chocolateyinstall.ps1"
 (Get-Content $filePath).Replace("VERSIONHERE",$version) | Set-Content $filePath
 
 Copy-Item choco\hacker-scoper_template.nuspec choco\hacker-scoper\tools\hacker-scoper.nuspec
-$filePath = "hacker-scoper\choco\hacker-scoper\tools\hacker-scoper.nuspec"
+$filePath = "choco\hacker-scoper\tools\hacker-scoper.nuspec"
 (Get-Content $filePath).Replace("VERSIONHERE",$version) | Set-Content $filePath
 
 echo 'Compressing files...'
