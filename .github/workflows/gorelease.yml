@@ -31,6 +31,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
 
   chocolatey:
+    needs: goreleaser
     runs-on: windows-latest
     steps:
       -
