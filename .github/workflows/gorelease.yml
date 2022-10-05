@@ -47,4 +47,4 @@ jobs:
         name: Create Choco pack
         uses: crazy-max/ghaction-chocolatey@v2
         with:
-          args: pack
+          args: pack choco\hacker-scoper\tools\hacker-scoper.nuspec
