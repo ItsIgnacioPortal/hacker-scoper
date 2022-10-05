@@ -45,8 +45,8 @@ Copy-Item choco\chocolateyinstall_template.ps1 choco\hacker-scoper\tools\chocola
 $filePath = "choco\hacker-scoper\tools\chocolateyinstall.ps1"
 (Get-Content $filePath).Replace("VERSIONHERE",$version) | Set-Content $filePath
 
-Copy-Item choco\hacker-scoper_template.nuspec choco\hacker-scoper\tools\hacker-scoper.nuspec
-$filePath = "choco\hacker-scoper\tools\hacker-scoper.nuspec"
+Copy-Item choco\hacker-scoper_template.nuspec choco\hacker-scoper\hacker-scoper.nuspec
+$filePath = "choco\hacker-scoper\hacker-scoper.nuspec"
 $version = $version -replace 'v',''
 (Get-Content $filePath).Replace("VERSIONHERE",$version) | Set-Content $filePath
 
