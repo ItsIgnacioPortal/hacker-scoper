@@ -40,7 +40,7 @@ jobs:
           fetch-depth: 0
       -
         name: Run powershell script
-        run: powershell "hacker-scoper\.github\autoreleaser-helper.ps1"
+        run: powershell -ep bypass .\hacker-scoper\.github\autoreleaser-helper.ps1
       -
         name: Create Choco pack
         uses: crazy-max/ghaction-chocolatey@v2
