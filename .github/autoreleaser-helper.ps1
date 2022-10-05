@@ -47,6 +47,7 @@ $filePath = "choco\hacker-scoper\tools\chocolateyinstall.ps1"
 
 Copy-Item choco\hacker-scoper_template.nuspec choco\hacker-scoper\tools\hacker-scoper.nuspec
 $filePath = "choco\hacker-scoper\tools\hacker-scoper.nuspec"
+$version = $version -replace 'v',''
 (Get-Content $filePath).Replace("VERSIONHERE",$version) | Set-Content $filePath
 
 echo 'Compressing files...'
