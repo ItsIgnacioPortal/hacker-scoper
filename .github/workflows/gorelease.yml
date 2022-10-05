@@ -1,4 +1,4 @@
-name: goreleaser
+name: AutoReleaser
 
 on:
   push:
@@ -29,3 +29,20 @@ jobs:
           args: release --rm-dist --config ${{ github.workspace }}/../.goreleaser.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
+
+  chocolatey:
+    runs-on: windows-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      -
+        name: Run powershell script
+        run: powershell "hacker-scoper\.github\autoreleaser-helper.ps1"
+      -
+        name: Create Choco pack
+        uses: crazy-max/ghaction-chocolatey@v2
+        with:
+          args: pack
