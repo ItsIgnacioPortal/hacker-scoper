@@ -42,9 +42,7 @@ jobs:
       -
         name: Run powershell script
         run: |
-          powershell -Command "$pwd"
-          powershell -Command "tree"
-          powershell -ep bypass .\hacker-scoper\.github\autoreleaser-helper.ps1
+          powershell -ep bypass .\.github\autoreleaser-helper.ps1
       -
         name: Create Choco pack
         uses: crazy-max/ghaction-chocolatey@v2
