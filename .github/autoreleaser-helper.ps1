@@ -41,14 +41,17 @@ echo 'Preparing Chocolatey file...'
 cd $originaldir
 echo $pwd
 tree
-Copy-Item hacker-scoper\choco\chocolateyinstall_template.ps1 hacker-scoper\choco\hacker-scoper\tools\chocolateyinstall.ps1
+Copy-Item choco\chocolateyinstall_template.ps1 choco\hacker-scoper\tools\chocolateyinstall.ps1
 $filePath = "hacker-scoper\choco\hacker-scoper\tools\chocolateyinstall.ps1"
 (Get-Content $filePath).Replace("VERSIONHERE",$version) | Set-Content $filePath
 
-Copy-Item hacker-scoper\choco\hacker-scoper_template.nuspec hacker-scoper\choco\hacker-scoper\tools\hacker-scoper.nuspec
+Copy-Item choco\hacker-scoper_template.nuspec choco\hacker-scoper\tools\hacker-scoper.nuspec
 $filePath = "hacker-scoper\choco\hacker-scoper\tools\hacker-scoper.nuspec"
 (Get-Content $filePath).Replace("VERSIONHERE",$version) | Set-Content $filePath
 
 echo 'Compressing files...'
-Compress-Archive $env:TEMP\windows_386\hacker-scoper.exe -DestinationPath hacker-scoper\choco\hacker-scoper\tools\hacker-scoper_$($version)_windows_386.zip
-Compress-Archive $env:TEMP\windows_amd64\hacker-scoper.exe -DestinationPath hacker-scoper\choco\hacker-scoper\tools\hacker-scoper_$($version)windows_amd64.zip
+Compress-Archive $env:TEMP\windows_386\hacker-scoper.exe -DestinationPath choco\hacker-scoper\tools\hacker-scoper_$($version)_windows_386.zip
+Compress-Archive $env:TEMP\windows_amd64\hacker-scoper.exe -DestinationPath choco\hacker-scoper\tools\hacker-scoper_$($version)windows_amd64.zip
+
+cd choco\hacker-scoper
+echo $pwd
