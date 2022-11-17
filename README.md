@@ -82,7 +82,7 @@ Usage: hacker-scoper --file /path/to/targets [--company company | --custom-insco
 | -oos | --outofcope-file |  Path to a custom plaintext file containing scopes exclusions |
 | -e | --explicit-level int |  How explicit we expect the scopes to be:    <br> 1 (default): Include subdomains in the scope even if there's not a wildcard in the scope    <br> 2: Include subdomains in the scope only if there's a wildcard in the scope    <br> 3: Include subdomains in the scope only if they are explicitly within the scope |
 | -ch | --chain-mode |  In "chain-mode" we only output the important information. No decorations.. Default: false |
-| --fire |  Set this to specify a path for the FireBounty JSON. |
+| --fire |  | Set this to specify a path for the FireBounty JSON. |
 | -iu | --include-unsure |  Include "unsure" URLs in the output. An unsure URL is a URL that's not in scope, but is also not out of scope. Very probably unrelated to the bug bounty program. |
 | -o | --output |  Save the inscope urls to a file |
 | -ho | --hostnames-only |  Output only hostnames instead of the full URLs |
