@@ -2,7 +2,7 @@ module github.com/ItsIgnacioPortal/hacker-scoper
 
 go 1.17
 
-require golang.org/x/net v0.0.0-20221004154528-8021a29435af
+require golang.org/x/net v0.2.0
 
 require (
 	github.com/akamensky/argparse v1.3.1 // indirect
@@ -12,6 +12,7 @@ require (
 	github.com/gookit/color v1.5.0 // indirect
 	github.com/root4loot/rescope v0.0.0-20221006170311-507297bd1931 // indirect
 	github.com/xo/terminfo v0.0.0-20210125001918-ca9a967f8778 // indirect
-	golang.org/x/sys v0.0.0-20220728004956-3c1f35247d10 // indirect
+	golang.org/x/crypto v0.3.0 // indirect
+	golang.org/x/sys v0.2.0 // indirect
 	golang.org/x/text v0.4.0 // indirect
 )
