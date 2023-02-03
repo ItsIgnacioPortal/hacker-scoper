@@ -29,7 +29,7 @@ const firebountyJSONFilename = "firebounty-scope-url_only.json"
 
 var firebountyJSONPath string
 
-//https://tutorialedge.net/golang/parsing-json-with-golang/
+// https://tutorialedge.net/golang/parsing-json-with-golang/
 type Scope struct {
 	Scope      string //either a domain, or a wildcard domain
 	Scope_type string //we only care about "web_application"
@@ -86,7 +86,7 @@ func main() {
 	var outofScopesListFilepath string
 	usedstdin = false
 
-	version = "v3.0.0"
+	version = "v4.0.0"
 
 	const usage = colorBlue + `Usage:` + colorReset + ` hacker-scoper --file /path/to/targets [--company company | --custom-inscopes-file /path/to/inscopes [--custom-outofcopes-file /path/to/outofscopes] [--verbose]] [--explicit-level INT] [--reuse Y/N] [--chain-mode] [--fire /path/to/firebounty.json] [--include-unsure] [--output /path/to/outputfile] [--hostnames-only]
 
@@ -727,7 +727,7 @@ func main() {
 
 }
 
-//path must not have the end bar (/)
+// path must not have the end bar (/)
 func createFile(file string, path string) *os.File {
 	outputFile, err := os.Create(path + "/" + file)
 	if err != nil {
@@ -737,7 +737,7 @@ func createFile(file string, path string) *os.File {
 	return outputFile
 }
 
-//https://stackoverflow.com/a/30948278/11490425
+// https://stackoverflow.com/a/30948278/11490425
 func popLine(f *os.File) ([]byte, error) {
 	fi, err := f.Stat()
 	if err != nil {
@@ -813,7 +813,7 @@ func updateFireBountyJSON() {
 
 }
 
-//we may recieve one like the following as scope:
+// we may recieve one like the following as scope:
 // example.com
 // *.example.com
 // 192.168.0.1
@@ -1068,7 +1068,7 @@ func removePortFromHost(url *url.URL) string {
 	return portless
 }
 
-//out-of-scopes are parsed as --explicit-level==2
+// out-of-scopes are parsed as --explicit-level==2
 func isOutOfScope(targetURL *url.URL, outofScopesListFilepath string, targetIP net.IP, firebountyOutOfScopes []Scope) bool {
 	var err error
 
