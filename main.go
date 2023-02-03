@@ -1049,7 +1049,7 @@ func parseScopesWrapper(scope string, explicitLevel int, targetsListFilepath str
 
 func crash(message string, err error) {
 	cleanup()
-	fmt.Print(string(colorRed) + "[ERROR]: " + message + string(colorReset) + "\n")
+	fmt.Fprintf(os.Stderr, string(colorRed)+"[ERROR]: "+message+string(colorReset))
 	panic(err)
 }
 
