@@ -557,8 +557,15 @@ func main() {
 					matchingCompanyList = append(matchingCompanyList, []string{strconv.Itoa(companyCounter), firebountyJSON.Pgms[companyCounter].Name})
 				}
 			}
+			if len(matchingCompanyList) == 0 && !chainMode {
+				fmt.Print(string(colorRed) + "[-] 0 (lowercase'd) company names contained the string \"" + company + "\"" + string(colorReset) + "\n")
+			} else if len(matchingCompanyList) > 1 {
 
-			if len(matchingCompanyList) != 1 {
+				if chainMode {
+					err = nil
+					crash("Unable to match the company to a single company. Please use a more exact company string.", err)
+				}
+
 				//appearently "while" doesn't exist in Go. It has been replaced by "for"
 				for userPickedInvalidChoice {
 					//For every matchingCompanyList item...
@@ -610,8 +617,6 @@ func main() {
 				if !firebountyQueryReturnedResults && !chainMode {
 					fmt.Print(string(colorRed) + "[-] 0 (lowercase'd) company names contained the string \"" + company + "\"" + string(colorReset) + "\n")
 				}
-			} else if len(matchingCompanyList) == 0 && !chainMode {
-				fmt.Print(string(colorRed) + "[-] 0 (lowercase'd) company names contained the string \"" + company + "\"" + string(colorReset) + "\n")
 			}
 
 			//user chose to use their own scope list
