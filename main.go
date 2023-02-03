@@ -558,55 +558,59 @@ func main() {
 				}
 			}
 
-			//appearently "while" doesn't exist in Go. It has been replaced by "for"
-			for userPickedInvalidChoice {
-				//For every matchingCompanyList item...
-				for i := 0; i < len(matchingCompanyList); i++ {
-					//Print it
-					fmt.Println("    " + strconv.Itoa(i) + " - " + matchingCompanyList[i][1])
+			if len(matchingCompanyList) != 1 {
+				//appearently "while" doesn't exist in Go. It has been replaced by "for"
+				for userPickedInvalidChoice {
+					//For every matchingCompanyList item...
+					for i := 0; i < len(matchingCompanyList)-1; i++ {
+						//Print it
+						fmt.Println("    " + strconv.Itoa(i) + " - " + matchingCompanyList[i][1])
+					}
+
+					//Show user the option to combine all of the previous companies as if they were a single company
+					fmt.Println("    " + strconv.Itoa(len(matchingCompanyList)) + " - COMBINE ALL")
+
+					//Get userchoice
+					fmt.Print("\n[+] Multiple companies matched \"" + company + "\". Please choose one: ")
+					fmt.Scanln(&userChoice)
+
+					//Convert userchoice str -> int
+					userChoiceAsInt, err = strconv.Atoi(userChoice)
+					//If the user picked something invalid...
+					if err != nil {
+						warning("Invalid option selected!")
+					} else {
+						userPickedInvalidChoice = false
+					}
 				}
 
-				//Show user the option to combine all of the previous companies as if they were a single company
-				fmt.Println("    " + strconv.Itoa(len(matchingCompanyList)) + " - COMBINE ALL")
+				//tip
+				fmt.Println("[-] If you want to remove one of these options, feel free to modify your firebounty database: " + firebountyJSONPath + "\n")
 
-				//Get userchoice
-				fmt.Print("\n[+] Multiple companies matched \"" + company + "\". Please choose one: ")
-				fmt.Scanln(&userChoice)
+				firebountyQueryReturnedResults := false
 
-				//Convert userchoice str -> int
-				userChoiceAsInt, err = strconv.Atoi(userChoice)
-				//If the user picked something invalid...
-				if err != nil {
-					warning("Invalid option selected!")
+				//If the user chose to "COMBINE ALL"...
+				if userChoiceAsInt == len(matchingCompanyList) {
+					//for every company that matched the company query...
+					for i := 0; i < len(matchingCompanyList); i++ {
+						firebountyQueryReturnedResults = true
+
+						//Load the matchingCompanyList 2D slice, and convert the first member from string to integer, and save the company index
+						companyIndex, _ := strconv.Atoi(matchingCompanyList[i][0])
+						parseCompany(company, firebountyJSON, companyIndex, explicitLevel, outofScopesListFilepath)
+					}
 				} else {
-					userPickedInvalidChoice = false
-				}
-			}
-
-			//tip
-			fmt.Println("[-] If you want to remove one of these options, feel free to modify your firebounty database: " + firebountyJSONPath + "\n")
-
-			firebountyQueryReturnedResults := false
-
-			//If the user chose to "COMBINE ALL"...
-			if userChoiceAsInt == len(matchingCompanyList) {
-				//for every company that matched the company query...
-				for i := 0; i < len(matchingCompanyList); i++ {
 					firebountyQueryReturnedResults = true
 
-					//Load the matchingCompanyList 2D slice, and convert the first member from string to integer, and save the company index
-					companyIndex, _ := strconv.Atoi(matchingCompanyList[i][0])
-					parseCompany(company, firebountyJSON, companyIndex, explicitLevel, outofScopesListFilepath)
+					//Use userChoiceAsInt as an index for the matchingCompanyList 2D slice, and save the company index
+					companyCounter, _ := strconv.Atoi(matchingCompanyList[userChoiceAsInt][0])
+					parseCompany(company, firebountyJSON, companyCounter, explicitLevel, outofScopesListFilepath)
 				}
-			} else {
-				firebountyQueryReturnedResults = true
 
-				//Use userChoiceAsInt as an index for the matchingCompanyList 2D slice, and save the company index
-				companyCounter, _ := strconv.Atoi(matchingCompanyList[userChoiceAsInt][0])
-				parseCompany(company, firebountyJSON, companyCounter, explicitLevel, outofScopesListFilepath)
-			}
-
-			if !firebountyQueryReturnedResults && !chainMode {
+				if !firebountyQueryReturnedResults && !chainMode {
+					fmt.Print(string(colorRed) + "[-] 0 (lowercase'd) company names contained the string \"" + company + "\"" + string(colorReset) + "\n")
+				}
+			} else if len(matchingCompanyList) == 0 && !chainMode {
 				fmt.Print(string(colorRed) + "[-] 0 (lowercase'd) company names contained the string \"" + company + "\"" + string(colorReset) + "\n")
 			}
 
