@@ -1054,7 +1054,7 @@ func crash(message string, err error) {
 }
 
 func warning(message string) {
-	fmt.Print(string(colorYellow) + "[WARNING]: " + message + string(colorReset) + "\n")
+	fmt.Fprintf(os.Stderr, string(colorYellow)+"[WARNING]: "+message+string(colorReset)+"\n")
 }
 
 func infoGood(prefix string, message string) {
