@@ -1,6 +1,7 @@
 name: AutoReleaser
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - 'v*.*.*'
