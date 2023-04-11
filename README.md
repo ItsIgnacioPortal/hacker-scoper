@@ -1,4 +1,7 @@
+![Hacker-scoper icon](icon/icon.png)
+
 # Hacker-Scoper
+---
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FItsIgnacioPortal%2Fhacker-scoper&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 [![goreleaser](https://github.com/ItsIgnacioPortal/hacker-scoper/actions/workflows/gorelease.yml/badge.svg)](https://github.com/ItsIgnacioPortal/hacker-scoper/actions/workflows/gorelease.yml)  
 [![forthebadge](https://forthebadge.com/images/badges/made-with-go.svg)](https://forthebadge.com) 
