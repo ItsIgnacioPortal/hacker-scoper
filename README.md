@@ -15,8 +15,6 @@
   <img src="https://forthebadge.com/images/badges/made-with-go.svg">
   <img src="https://forthebadge.com/images/badges/built-with-love.svg">
   <img src="https://forthebadge.com/images/badges/cc-sa.svg">
-  <img src="https://forthebadge.com/images/badges/check-it-out.svg">
-  <img src="https://forthebadge.com/images/badges/fo-real.svg">
 </p>
 
 ---
