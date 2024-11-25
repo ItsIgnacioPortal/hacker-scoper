@@ -54,7 +54,7 @@ go install github.com/ItsIgnacioPortal/hacker-scoper
 
 Download a pre-built binary from [the releases page](https://github.com/ItsIgnacioPortal/hacker-scoper/releases)
 
-## Usage
+## Demos
 
 ### Demo with company lookup 
 [![asciicast](https://asciinema.org/a/WMeGitIu0VEjaFQrbv45fjhJG.svg)](https://asciinema.org/a/WMeGitIu0VEjaFQrbv45fjhJG)
@@ -66,6 +66,11 @@ Download a pre-built binary from [the releases page](https://github.com/ItsIgnac
 ### Demo with custom scopes file
 [![asciicast](https://asciinema.org/a/SWtH3kLbEOmyPzrGFQe9ic9BB.svg)](https://asciinema.org/a/SWtH3kLbEOmyPzrGFQe9ic9BB)
 
+## Company scope matching
+- **Q: How does the "company" scope matching actually work?**
+- A: It works by looking for company-name matches in a local copy of the [firebounty](https://firebounty.com/) database (`firebounty-scope-url_only.json`). The company name that you specify will be lowercase'd, and hacker-scoper will check if any company name in the JSON contains that string. Once it finds a name match, it'll filter your URLs according to the scopes that firebounty detected for that company. You can test how this would perform by just searching some name in [the firebounty website](https://firebounty.com/).
+
+## Usage
 Usage: hacker-scoper --file /path/to/targets [--company company | --custom-inscopes-file /path/to/inscopes [--custom-outofcopes-file /path/to/outofscopes] [--verbose]] [--explicit-level INT] [--reuse Y/N] [--chain-mode] [--fire /path/to/firebounty.json] [--include-unsure] [--output /path/to/outputfile] [--hostnames-only]
 
 ### Usage examples:
@@ -134,10 +139,6 @@ dev.*.example.com
 192.168.2.254
 FE80::0202:B3FF:FE1E:8330
 ```
-
-## F.A.Q
-- **Q: How does the "company" scope matching actually work?**     
-A: It works by looking for company-name matches in a local copy of the [firebounty](https://firebounty.com/) database (`firebounty-scope-url_only.json`). The company name that you specify will be lowercase'd, and hacker-scoper will check if any company name in the JSON contains that string. Once it finds a name match, it'll filter your URLs according to the scopes that firebounty detected for that company. You can test how this would perform by just searching some name in [the firebounty website](https://firebounty.com/).
 
 ## Special thank you
 This project was inspired by the [yeswehack_vdp_finder](https://github.com/yeswehack/yeswehack_vdp_finder)
