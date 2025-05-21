@@ -30,7 +30,6 @@ This is a Go v1.17.2 application made for quickly filtering out URLs and IP addr
 - Match IPv4s
 - Match IPv6s
 - Match any valid URL ([RFC 3986](https://www.rfc-editor.org/rfc/rfc3986.html) Compliant)
-- Attempt to scrape security.txt files from your targets
 - Easily chainable with other tools. Use `-ch`/`--chain-mode` to disable the fancy text decorations.
 - TLD-Based detection of mis-configured bug-bounty programs: Sometimes, bug bounty programs set apk package names such as `com.my.businness.gatewayportal` as `web_application` resources instead of as `android_application` resources. hacker-scoper will detect that, and alert the user of the mis-configuration.
 - If no company name and no custom files are specified, hacker-scoper will look for `.inscope` and `.noscope` files in the current or parent directories.
@@ -56,7 +55,7 @@ Download a pre-built binary from [the releases page](https://github.com/ItsIgnac
 
 ## Demos
 
-### Demo with company lookup 
+### Demo with company lookup
 [![asciicast](https://asciinema.org/a/WMeGitIu0VEjaFQrbv45fjhJG.svg)](https://asciinema.org/a/WMeGitIu0VEjaFQrbv45fjhJG)
 <br>
 <br>
@@ -92,8 +91,6 @@ Usage: hacker-scoper --file /path/to/targets [--company company | --custom-insco
 | Short | Long | Description |
 |-------|------|-------------|
 | -c | --company |  Specify the company name to lookup. |
-| -cstxt | --check-security-txt |  Whether or not we will try to scrape security.txt from all domains and subdomains (Warning: experimental feature.) |
-| -r | --reuse |  Reuse previously generated security.txt lists? (Y/N). Only needed if using "-cstxt" |
 | -f | --file |  Path to your file containing URLs |
 | -ins | --inscope-file |  Path to a custom plaintext file containing scopes |
 | -oos | --outofcope-file |  Path to a custom plaintext file containing scopes exclusions |
