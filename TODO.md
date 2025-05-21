@@ -1,6 +1,7 @@
 - [x] Add **Verbose** (`-v, --verbose`) flag that will show what scopes were detected in firebounty/hackerone, etc. This option is incompatible with chain-mode.
 - [x] Add **UNSURE**: If a URL is not within scope, but also not outside of the scope, report it as _UNSURE_. Set `-iu / --include-unsure` to enable.
 - [x] Add **Allow user to select a company when there's multiple matches for the same company name**
+- [ ] Comply with [OpenSSF Best Practices](https://www.bestpractices.dev)
 - [ ] Add **BBaaS API private program scope query**: If a company wasn't found on firebounty, ask the user for an API key. REFERENCE: https://github.com/root4loot/rescope#features
 
 	"Do you want to add a HackerOne API Key to get private bug-bounty program scopes? ([Yes]/No/Later): "
