@@ -79,8 +79,6 @@ func main() {
 	var version string
 	var showVersion bool
 	var company string
-	var stxt bool
-	var reuseList string  //should only be "Y", "N" or ""
 	var explicitLevel int //should only be [0], 1, or 2
 	var scopesListFilepath string
 	var outofScopesListFilepath string
@@ -109,13 +107,6 @@ func main() {
 ` + colorBlue + `List of all possible arguments:` + colorReset + `
   -c, --company string
       Specify the company name to lookup.
-
-  -cstxt, --check-security-txt
-      Whether or not we will try to scrape security.txt from all domains and subdomains (Warning: experimental feature.)
-
-  -r, --reuse string
-      Reuse previously generated security.txt lists? (Y/N)
-	  Only needed if using "-cstxt"
 
   -f, --file string
       Path to your file containing URLs
@@ -166,10 +157,6 @@ func main() {
 	flag.StringVar(&outofScopesListFilepath, "outofcope-file", "", "Path to a custom plaintext file containing scopes exclusions")
 	flag.IntVar(&explicitLevel, "e", 1, "Level of explicity expected. ([1]/2/3)")
 	flag.IntVar(&explicitLevel, "explicit-level", 1, "Level of explicity expected. ([1]/2/3)")
-	flag.BoolVar(&stxt, "cstxt", false, "Whether or not we will try to scrape security.txt from all domains and subdomains")
-	flag.BoolVar(&stxt, "check-security-txt", false, "Whether or not we will try to scrape security.txt from all domains and subdomains")
-	flag.StringVar(&reuseList, "r", "", "Reuse previously generated lists? (Y/N)")
-	flag.StringVar(&reuseList, "reuse", "", "Reuse previously generated lists? (Y/N)")
 	flag.BoolVar(&chainMode, "ch", false, "In \"chain-mode\" we only output the important information. No decorations.")
 	flag.BoolVar(&chainMode, "chain-mode", false, "In \"chain-mode\" we only output the important information. No decorations.")
 	flag.StringVar(&firebountyJSONPath, "fire", "", "Path to the FireBounty JSON")
@@ -283,184 +270,6 @@ func main() {
 
 	//clean targetsListFilepath path for +speed
 	targetsListFilepath = filepath.Clean(targetsListFilepath)
-
-	//Verify existance of the targetsListFilepath file
-	//https://stackoverflow.com/a/12518877/11490425
-	if _, err := os.Stat(targetsListFilepath); err == nil {
-		// path/to/whatever exists
-
-		//check if security.txt exists
-		//based on https://github.com/yeswehack/yeswehack_vdp_finder
-		if stxt {
-
-			var outputFileName string = "security-txt_URLs.txt"
-
-			//attempt to create the file to later write the result URLs
-			//https://stackoverflow.com/a/12518877/11490425
-			if _, err := os.Stat(outputFileName); err == nil {
-				//security-txt_URLs.txt exists
-				//reuse?
-				if reuseList == "" {
-					fmt.Println("Previous " + outputFileName + " file found. Do you want to reuse it? ([Y]/N): ")
-					fmt.Scanln(&reuseList)
-				}
-				if reuseList == "N" {
-					//delete the old file
-					err := os.Remove(outputFileName) // remove a single file
-					if err != nil {
-						fmt.Println(err)
-					}
-
-					createFile(outputFileName, "")
-
-					//open the file
-					//https://stackoverflow.com/a/16615559/11490425
-					file, err := os.Open(targetsListFilepath)
-					if err != nil {
-						crash("Could not open targets URL-List file", err)
-					}
-
-					//scan the file using bufio
-					scanner := bufio.NewScanner(file)
-
-					//for each line in the file..
-					//Scanner will error with lines longer than 65536 characters. If you know your line length is greater than 64K
-					for scanner.Scan() {
-						//https://gobyexample.com/url-parsing
-						URL, err := url.Parse(scanner.Text())
-						if err != nil {
-							crash("Could not read a line on the input file. Lines longer than 65536 characters are not allowed. If this is an issue for you, open an issue.", err)
-						}
-
-						//get only domains & subdomains from page which start with HTTP/S
-						if URL.Scheme == "http" || URL.Scheme == "https" {
-							//remove query parameters from the URL
-							//https://stackoverflow.com/a/55299809/11490425
-							URL.RawQuery = ""
-
-							//add the security.txt path
-							//TODO: despite security.txt also being valid at the root directory, for now we will only look for it on the .well-known directory
-							URL.Path = URL.Path + "/.well-known/security.txt"
-
-							//open the output file for writing
-							f, err := os.OpenFile(outputFileName, os.O_APPEND|os.O_WRONLY, 0600)
-							if err != nil {
-								crash("Coulnd't open file "+outputFileName+" for writing security.txt URLs.", err)
-							}
-
-							//append the URL to the file
-							if _, err = f.WriteString("\n" + URL.String()); err != nil {
-								crash("Couldn't append a line to the security.txt-check output file.", err)
-							}
-
-							f.Close()
-
-						}
-
-						if err := scanner.Err(); err != nil {
-							crash("Could not read URL List file successfully", err)
-						}
-					}
-
-					file.Close()
-
-					//pop the first line of the list, because it contains an unnecesary linejump
-					//the line popper has it's own error handling.
-					outputFile, _ := os.OpenFile(outputFileName, os.O_RDWR, 0666)
-					popLine(outputFile)
-					outputFile.Close()
-
-				} //else { //user wants to reuse the list }
-
-			} else if errors.Is(err, os.ErrNotExist) {
-				//security-txt_URLs.txt does NOT exist
-				//create it
-				createFile(outputFileName, "")
-
-			} else {
-				// Schrodinger: file may or may not exist. See err for details.
-				panic(err)
-
-			}
-
-			//open the file
-			//https://stackoverflow.com/a/16615559/11490425
-			file, err := os.Open(outputFileName)
-			if err != nil {
-				crash("Could not open the security.txt output file", err)
-			}
-
-			//Read the output file line per line
-			//scan the file using bufio
-			scanner := bufio.NewScanner(file)
-
-			for scanner.Scan() {
-				const titleRegex = `(<title>).*(</title>)`
-				allHTTPErrors := []int{300, 301, 302, 303, 304, 305, 306, 307, 308, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 421, 422, 423, 491, 424, 491, 425, 426, 427, 428, 429, 430, 431, 451, 500, 501, 502, 503, 504, 505, 506, 507, 508, 584, 509, 510, 511}
-
-				//TODO: customizeable timeout
-				//https://stackoverflow.com/a/25344458/11490425
-				client := http.Client{
-					Timeout: 5 * time.Second,
-				}
-				resp, err := client.Get(scanner.Text())
-				if err != nil {
-					//do not panic if a request fails
-					if !chainMode {
-						fmt.Println("[HTTP Fail]: Request failed for " + scanner.Text())
-					}
-
-				} else {
-					if resp.StatusCode == 200 {
-						body, err := ioutil.ReadAll(resp.Body)
-						resp.Body.Close()
-						if err != nil {
-							fmt.Println(err)
-						}
-
-						regex, _ := regexp.Compile(titleRegex)
-						result := regex.FindAllString(string(body), 2)
-						var flag bool
-
-					html:
-						for titleCounter := 0; titleCounter < len(result); titleCounter++ {
-							for i := 0; i < len(allHTTPErrors); i++ {
-								if strings.Contains(result[titleCounter], strconv.Itoa(allHTTPErrors[i])) {
-									if !chainMode {
-										fmt.Println("ERROR - STATUS CODE " + strconv.Itoa(allHTTPErrors[i]))
-									}
-									flag = true
-									break html
-								}
-							}
-
-						}
-
-						if !flag {
-							//security.txt found!
-							infoGood("", "security.txt found at: "+scanner.Text())
-							fmt.Println(string(body))
-						}
-
-					}
-				}
-
-			}
-			if err := scanner.Err(); err != nil {
-				crash("Could not read URL List file successfully", err)
-			}
-		}
-
-	} else if errors.Is(err, os.ErrNotExist) {
-		// path/to/whatever does *not* exist
-		err = nil
-		crash("The provided URL list file does not exist!", err)
-
-	} else {
-		// Schrodinger: file may or may not exist. See err for details.
-		crash("Could not verify existance of provided URL List file!", err)
-
-	}
 
 	if company == "" && scopesListFilepath == "" {
 		//var err error
