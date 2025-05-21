@@ -97,6 +97,7 @@ Usage: hacker-scoper --file /path/to/targets [--company company | --custom-insco
 | -ho | --hostnames-only |  Output only hostnames instead of the full URLs |
 | --verbose |  | Show what scopes were detected for a given company name. |
 | --version |  | Show the installed version |
+|_______________|___________________| _____________________________________ |
 
 list example:
 ```javascript
