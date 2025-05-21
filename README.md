@@ -1,6 +1,4 @@
-![Hacker-scoper icon](icon/icon.png)
-
-<h1 align="center">Hacker Scoper</h1>
+<div align="center"><img src="icon/icon_v2_universal.png" alt ="Hacker-scoper icon"></div>
 
 <p align="center">
   <a href="https://github.com/ItsIgnacioPortal/hacker-scoper/actions/workflows/gorelease.yml">
