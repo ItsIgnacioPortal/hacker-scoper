@@ -127,8 +127,12 @@ func main() {
       In "chain-mode" we only output the important information. No decorations.
 	    Default: false
 	
-  --fire string
-      Set this to specify a path for the FireBounty JSON.
+  --database string
+      Custom path to the cached firebounty database.
+	  	Default:
+		- Windows: %APPDATA%\hacker-scoper\
+		- Linux: /etc/hacker-scoper/
+		- Android: $HOME/.hacker-scoper/
 
   -iu, --include-unsure
       Include "unsure" URLs in the output. An unsure URL is a URL that's not in scope, but is also not out of scope. Very probably unrelated to the bug bounty program.
@@ -159,7 +163,7 @@ func main() {
 	flag.IntVar(&explicitLevel, "explicit-level", 1, "Level of explicity expected. ([1]/2/3)")
 	flag.BoolVar(&chainMode, "ch", false, "In \"chain-mode\" we only output the important information. No decorations.")
 	flag.BoolVar(&chainMode, "chain-mode", false, "In \"chain-mode\" we only output the important information. No decorations.")
-	flag.StringVar(&firebountyJSONPath, "fire", "", "Path to the FireBounty JSON")
+	flag.StringVar(&firebountyJSONPath, "database", "", "Custom path to the cached firebounty database")
 	flag.StringVar(&inscopeOutputFile, "o", "", "Save the inscope urls to a file")
 	flag.StringVar(&inscopeOutputFile, "output", "", "Save the inscope urls to a file")
 	flag.BoolVar(&showVersion, "version", false, "Show installed version")
