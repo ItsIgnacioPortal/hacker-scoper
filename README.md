@@ -14,17 +14,13 @@ Hacker-scoper is a Go (v1.17.2) tool designed to assist cybersecurity profession
 
 ## 🌟 Features
 
-- Automagically match your targets from an automatically-updated local scopes collection.
-- Use your own scopes file.
-- Set "explicit-level" (Parse (all as) wildcards?)
-- Parse advanced wildcards as regex (supports scope filters like `amzn*.example.com` and `dev.*.example.com`).
-- Match IPv4s
-- Match IPv6s
-- Match any valid URL ([RFC 3986](https://www.rfc-editor.org/rfc/rfc3986.html) Compliant)
-- Easily chainable with other tools. Use `-ch`/`--chain-mode` to disable the fancy text decorations.
-- TLD-Based detection of mis-configured bug-bounty programs: Sometimes, bug bounty programs set apk package names such as `com.my.businness.gatewayportal` as `web_application` resources instead of as `android_application` resources. hacker-scoper will detect that, and alert the user of the mis-configuration.
-- If no company name and no custom files are specified, hacker-scoper will look for `.inscope` and `.noscope` files in the current or parent directories.
-- Save output to a file.
+- **Automatic scope detection**: Hacker-scoper maintains an automatically-updated cached database of public program scopes. This means you don't need to manually specify the program scope unless the bug bounty program is private. You just need to supply the comany name (`-c company-name-here`).
+- **Easy customization**: You can load the scope of any private program scopes into files named `.inscope` and `.noscope` for inscope assets, and out-of-scope assets respectively.
+- **Match any asset**: Hacker-scoper works with IPv4, IPv6, and any URL format (including non-conventional ones like `sql://` or `redis://`).
+- **Wildcard support**: Hacker-scoper supports wildcards in any part of your scope, allowing you to use filters like `amzn*.example.com` and `dev.*.example.com`.
+- **Automation friendly**: Use the `-ch`/`--chain-mode` argument to disable the fancy text decorations and output only the in-scope assets.
+- **Flexible**: For any companies with vaguely defined scopes, you can enable or disable scope wildcard parsing using the command-line argument `-e`/`--explicit-level`.
+- **Misconfiguration detection**: Using TLD-Based detection, hacker-scoper can automatically detect misconfigurations in bug-bounty program scopes. For example: Sometimes bug bounty programs set APK package names such as `com.my.businness.gatewayportal` as `web_application` resources instead of as `android_application` resources in their program scope, causing trouble for anyone using automatic tools. Hacker-scoper automatically detects these errors and notifies the user.
 
 ## 📦 Installation
 
