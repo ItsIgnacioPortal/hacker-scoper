@@ -374,7 +374,10 @@ func main() {
 			}
 			if len(matchingCompanyList) == 0 && !chainMode {
 				fmt.Println(string(colorRed) + "[-] 0 (lowercase'd) company names contained the string \"" + company + "\"" + string(colorReset))
-				fmt.Println(string(colorRed) + "[-] Consider doing a manual search at https://firebounty.com, or loading the scopes manually into '.inscope' and '.noscope' files.")
+				fmt.Println(string(colorRed) + "[-] Consider either of these options:")
+				fmt.Println(string(colorRed) + "\t - Doing a manual search at https://firebounty.com")
+				fmt.Println(string(colorRed) + "\t - Loading the scopes manually into '.inscope' and '.noscope' files.")
+				fmt.Println(string(colorRed) + "\t - Loading the scopes manually into custom files, specified with the --inscope-file and --outofscope-file arguments.")
 			} else if len(matchingCompanyList) > 1 {
 
 				if chainMode {
