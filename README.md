@@ -41,8 +41,8 @@ Download a pre-built binary from [the releases page](https://github.com/ItsIgnac
 go install github.com/ItsIgnacioPortal/hacker-scoper
 ```
 
-
 <br>
+
 ## 🎥 Demos
 
 ### Demo with company lookup
