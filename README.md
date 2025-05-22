@@ -12,7 +12,7 @@
 
 Hacker-scoper is a Go (v1.17.2) tool designed to assist cybersecurity professionals in bug bounty programs. It identifies and excludes URLs and IP addresses that fall outside a program's scope by comparing input targets (URLs/IPs) against a locally cached [FireBounty](https://firebounty.com) database of scraped scope data. Users may also supply a custom scope list for validation.
 
-## Features
+## 🌟 Features
 
 - Automagically match your targets from an automatically-updated local scopes collection.
 - Use your own scopes file.
@@ -26,7 +26,7 @@ Hacker-scoper is a Go (v1.17.2) tool designed to assist cybersecurity profession
 - If no company name and no custom files are specified, hacker-scoper will look for `.inscope` and `.noscope` files in the current or parent directories.
 - Save output to a file.
 
-## Installation
+## 📦 Installation
 
 **Using Chocolatey**
 
@@ -43,8 +43,8 @@ go install github.com/ItsIgnacioPortal/hacker-scoper
 **From the releases page**
 
 Download a pre-built binary from [the releases page](https://github.com/ItsIgnacioPortal/hacker-scoper/releases)
-
-## Demos
+<br>
+## 🎥 Demos
 
 ### Demo with company lookup
 [![asciicast](https://asciinema.org/a/WMeGitIu0VEjaFQrbv45fjhJG.svg)](https://asciinema.org/a/WMeGitIu0VEjaFQrbv45fjhJG)
@@ -56,11 +56,11 @@ Download a pre-built binary from [the releases page](https://github.com/ItsIgnac
 ### Demo with custom scopes file
 [![asciicast](https://asciinema.org/a/SWtH3kLbEOmyPzrGFQe9ic9BB.svg)](https://asciinema.org/a/SWtH3kLbEOmyPzrGFQe9ic9BB)
 
-## Company scope matching
+## 🏭 Company scope matching
 - **Q: How does the "company" scope matching actually work?**
 - A: It works by looking for company-name matches in a cached copy of the [firebounty](https://firebounty.com/) database. The company name that you specify will be lowercase'd, and then the tool will check if any company name in the database contains that string. Once it finds a name match, it will filter your supplied targets according to the scopes that firebounty detected for that company. You can test how this would perform by just searching some name in [the firebounty website](https://firebounty.com/).
 
-## Usage
+## 🤔 Usage
 Usage: hacker-scoper --file /path/to/targets [--company company | --custom-inscopes-file /path/to/inscopes [--custom-outofcopes-file /path/to/outofscopes] [--verbose]] [--explicit-level INT] [--reuse Y/N] [--chain-mode] [--fire /path/to/firebounty.json] [--include-unsure] [--output /path/to/outputfile] [--hostnames-only]
 
 ### Usage examples:
@@ -129,10 +129,10 @@ dev.*.example.com
 FE80::0202:B3FF:FE1E:8330
 ```
 
-## Special thank you
+## :heart: Special thank you
 This project was inspired by the [yeswehack_vdp_finder](https://github.com/yeswehack/yeswehack_vdp_finder)
 
-## License
+## 📄 License
 All of the code on this repository is licensed under the *GNU Affero General Public License v3*. A copy can be seen as `LICENSE` on this repository.
 
 The library `golang.org/x/net/publicsuffix`, used within this project is licensed with [BSD-3-Clause](https://pkg.go.dev/golang.org/x/net/publicsuffix?tab=licenses).
