@@ -244,8 +244,8 @@ func main() {
 	//overwrite whathever was feeded to targetsListFilepath with the stdin input
 	//https://stackoverflow.com/a/26567513/11490425
 	stat, _ := os.Stdin.Stat()
-	if (stat.Mode() & os.ModeCharDevice) == 0 {
-		//data is being piped to stdin
+	if (stat.Mode()&os.ModeCharDevice) == 0 && !isVSCodeDebug() {
+		// data is being piped to stdin
 
 		var stdinInput string
 
@@ -1121,4 +1121,9 @@ func parseCompany(company string, firebountyJSON Firebounty, companyCounter int,
 
 		}
 	}
+}
+
+func isVSCodeDebug() bool {
+	// Set an environment variable in your VS Code launch config, e.g. "VSCODE_DEBUG=true"
+	return os.Getenv("VSCODE_DEBUG") == "true"
 }
