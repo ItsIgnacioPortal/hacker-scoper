@@ -303,7 +303,7 @@ func main() {
 			fmt.Print(".noscope found. Using " + noscopePath + "\n")
 		}
 
-		inscopeFileio, err := os.Open(inscopePath)
+		inscopeFileio, err := os.Open(inscopePath) // #nosec G304 -- inscopePath is a CLI argument specified by the user running the program. It is not unsafe to allow them to open any file in their own system.
 		if err != nil {
 			crash("Couldn't open "+inscopePath, err)
 		}
@@ -444,7 +444,7 @@ func main() {
 
 				//open the file
 				//https://stackoverflow.com/a/16615559/11490425
-				scopesFile, err := os.Open(scopesListFilepath)
+				scopesFile, err := os.Open(scopesListFilepath) // #nosec G304 -- scopesListFilepath is a CLI argument specified by the user running the program. It is not unsafe to allow them to open any file in their own system.
 				if err != nil {
 					crash("Could not open "+scopesListFilepath, err)
 				}
@@ -514,7 +514,7 @@ func main() {
 	//Add the URLs into the output file, if the flag has been set
 	if inscopeOutputFile != "" {
 
-		f, err := os.OpenFile(inscopeOutputFile, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+		f, err := os.OpenFile(inscopeOutputFile, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600) // #nosec G304 -- inscopeOutputFile is a CLI argument specified by the user running the program. It is not unsafe to allow them to open any file in their own system.
 		if err != nil {
 			crash("Unable to read output file", err)
 		}
@@ -549,7 +549,7 @@ func main() {
 
 // path must not have the end bar (/)
 func createFile(file string, path string) *os.File {
-	outputFile, err := os.Create(path + "/" + file)
+	outputFile, err := os.Create(path + "/" + file) // #nosec G304 -- path is os.TempDir(), which is a safe location to write to.
 	if err != nil {
 		panic(err)
 	}
@@ -672,7 +672,7 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 	}
 
 	//open the user-supplied URL list
-	file, err := os.Open(targetsListFilepath)
+	file, err := os.Open(targetsListFilepath) // #nosec G304 -- targetsListFilepath is a CLI argument specified by the user running the program. It is not unsafe to allow them to open any file in their own system.
 	if err != nil {
 		crash("Could not open your provided URL list file", err)
 	}
@@ -898,7 +898,7 @@ func isOutOfScope(targetURL *url.URL, outofScopesListFilepath string, targetIP n
 			// path/to/whatever exists
 			//open the file
 			//https://stackoverflow.com/a/16615559/11490425
-			outOfScopesFile, err := os.Open(outofScopesListFilepath)
+			outOfScopesFile, err := os.Open(outofScopesListFilepath) // #nosec G304 -- outofScopesListFilepath is a CLI argument specified by the user running the program. It is not unsafe to allow them to open any file in their own system.
 			if err != nil {
 				crash("Could not open "+outofScopesListFilepath, err)
 			}
