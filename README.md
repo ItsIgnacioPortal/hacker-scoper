@@ -1,4 +1,4 @@
-<div align="center"><img src="icon/icon_v2_universal.png" alt ="Hacker-scoper icon"></div>
+<div align="center"><img src="icon/icon_v2_universal.png" alt ="Hacker-Scoper icon"></div>
 <br>
 <p align="center">
   <a href="https://github.com/ItsIgnacioPortal/hacker-scoper/actions/workflows/gorelease.yml"><img src="https://github.com/ItsIgnacioPortal/hacker-scoper/actions/workflows/gorelease.yml/badge.svg"></a>
@@ -10,17 +10,18 @@
 
 ---
 
-Hacker-scoper is a Go (v1.17.2) tool designed to assist cybersecurity professionals in bug bounty programs. It identifies and excludes URLs and IP addresses that fall outside a program's scope by comparing input targets (URLs/IPs) against a locally cached [FireBounty](https://firebounty.com) database of scraped scope data. Users may also supply a custom scope list for validation.
+Hacker-Scoper is a Go (v1.17.2) tool designed to assist cybersecurity professionals in bug bounty programs. It identifies and excludes URLs and IP addresses that fall outside a program's scope by comparing input targets (URLs/IPs) against a locally cached [FireBounty](https://firebounty.com) database of scraped scope data. Users may also supply a custom scope list for validation.
 
 ## 🌟 Features
 
-- **Automatic scope detection**: Hacker-scoper maintains an automatically-updated cached database of public program scopes. This means you don't need to manually specify the program scope unless the bug bounty program is private. You just need to supply the comany name (`-c company-name-here`).
+- **Automatic scope detection**: Hacker-Scoper maintains an automatically-updated cached database of public program scopes. This means you don't need to manually specify the program scope unless the bug bounty program is private. You just need to supply the company name (`-c company-name-here`).
 - **Easy customization**: You can load the scope of any private program scopes into files named `.inscope` and `.noscope` for inscope assets, and out-of-scope assets respectively.
-- **Match any asset**: Hacker-scoper works with IPv4, IPv6, and any URL format (including non-conventional ones like `sql://` or `redis://`).
-- **Wildcard support**: Hacker-scoper supports wildcards in any part of your scope, allowing you to use filters like `amzn*.example.com` and `dev.*.example.com`. You can also use CIDR ranges to define your scope for IP addresses, for example: `192.168.2.1/24`, and `FE80::0204:B3FF::/24`.
+- **Match any asset**: Hacker-Scoper works with IPv4, IPv6, and any URL format (including non-conventional ones like `sql://` or `redis://`).
+- **Wildcard support**: Hacker-Scoper supports wildcards in any part of your scope, allowing you to use filters like `amzn*.example.com` and `dev.*.example.com`. You can also use CIDR ranges to define your scope for IP addresses, for example: `192.168.2.1/24`, and `FE80::0204:B3FF::/24`.
 - **Automation friendly**: Use the `-ch`/`--chain-mode` argument to disable the fancy text decorations and output only the in-scope assets.
+- **Compatible**: Hacker-Scoper is compatible with Windows, Linux, MacOS and Android in all architectures.
 - **Flexible**: For any companies with vaguely defined scopes, you can enable or disable scope wildcard parsing using the command-line argument `-e`/`--explicit-level`.
-- **Misconfiguration detection**: Using TLD-Based detection, hacker-scoper can automatically detect misconfigurations in bug-bounty program scopes. For example: Sometimes bug bounty programs set APK package names such as `com.my.businness.gatewayportal` as `web_application` resources instead of as `android_application` resources in their program scope, causing trouble for anyone using automatic tools. Hacker-scoper automatically detects these errors and notifies the user.
+- **Misconfiguration detection**: Using TLD-Based detection, hacker-scoper can automatically detect misconfigurations in bug-bounty program scopes. For example: Sometimes bug bounty programs set APK package names such as `com.my.businness.gatewayportal` as `web_application` resources instead of as `android_application` resources in their program scope, causing trouble for anyone using automatic tools. Hacker-Scoper automatically detects these errors and notifies the user.
 
 ## 📦 Installation
 
