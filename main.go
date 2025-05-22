@@ -64,7 +64,6 @@ type firebountySearchMatch struct {
 
 var chainMode bool
 var targetsListFilepath string
-var verboseMode bool
 var includeUnsure bool
 
 const colorReset = "\033[0m"
@@ -150,9 +149,6 @@ func main() {
   -ho, --hostnames-only
       Output only hostnames instead of the full URLs
 
-  --verbose
-      Show what scopes were detected for a given company name.
-
   --version
       Show the installed version
 
@@ -174,7 +170,6 @@ func main() {
 	flag.StringVar(&inscopeOutputFile, "o", "", "Save the inscope urls to a file")
 	flag.StringVar(&inscopeOutputFile, "output", "", "Save the inscope urls to a file")
 	flag.BoolVar(&showVersion, "version", false, "Show installed version")
-	flag.BoolVar(&verboseMode, "verbose", false, "Show what scopes were detected for a given company name.")
 	flag.BoolVar(&includeUnsure, "iu", false, "Include \"unsure\" URLs in the output. An unsure URL is a URL that's not in scope, but is also not out of scope. Very probably unrelated to the bug bounty program.")
 	flag.BoolVar(&includeUnsure, "include-unsure", false, "Include \"unsure\" URLs in the output. An unsure URL is a URL that's not in scope, but is also not out of scope. Very probably unrelated to the bug bounty program.")
 	flag.BoolVar(&outputDomainsOnly, "ho", false, "Output only domains instead of the full URLs")

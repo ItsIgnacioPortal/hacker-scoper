@@ -60,7 +60,7 @@ go install github.com/ItsIgnacioPortal/hacker-scoper
 - A: It works by looking for company-name matches in a cached copy of the [firebounty](https://firebounty.com/) database. The company name that you specify will be lowercase'd, and then the tool will check if any company name in the database contains that string. Once it finds a name match, it will filter your supplied targets according to the scopes that firebounty detected for that company. You can test how this would perform by just searching some name in [the firebounty website](https://firebounty.com/).
 
 ## 🤔 Usage
-Usage: hacker-scoper --file /path/to/targets [--company company | --custom-inscopes-file /path/to/inscopes [--custom-outofcopes-file /path/to/outofscopes] [--verbose]] [--explicit-level INT] [--reuse Y/N] [--chain-mode] [--fire /path/to/firebounty.json] [--include-unsure] [--output /path/to/outputfile] [--hostnames-only]
+Usage: hacker-scoper --file /path/to/targets [--company company | --custom-inscopes-file /path/to/inscopes [--custom-outofcopes-file /path/to/outofscopes]] [--explicit-level INT] [--reuse Y/N] [--chain-mode] [--fire /path/to/firebounty.json] [--include-unsure] [--output /path/to/outputfile] [--hostnames-only]
 
 ### Usage examples:
 - Example: Cat a file, and lookup scopes on firebounty    
@@ -90,7 +90,6 @@ Usage: hacker-scoper --file /path/to/targets [--company company | --custom-insco
 | -iu | --include-unsure |  Include "unsure" URLs in the output. An unsure URL is a URL that's not in scope, but is also not out of scope. Very probably unrelated to the bug bounty program. |
 | -o | --output |  Save the inscope urls to a file |
 | -ho | --hostnames-only |  Output only hostnames instead of the full URLs |
-| --verbose |  | Show what scopes were detected for a given company name. |
 | --version |  | Show the installed version |
 |_______________|___________________| _____________________________________ |
 
