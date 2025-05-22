@@ -57,6 +57,11 @@ type Firebounty struct {
 	Pgms         []Program
 }
 
+type firebountySearchMatch struct {
+	companyIndex int
+	companyName  string
+}
+
 var chainMode bool
 var targetsListFilepath string
 var verboseMode bool
@@ -360,7 +365,7 @@ func main() {
 				crash("Couldn't parse firebountyJSON into pre-defined struct.", err)
 			}
 
-			var matchingCompanyList [][]string
+			var matchingCompanyList []firebountySearchMatch
 			var userChoice string
 			var userPickedInvalidChoice bool = true
 			var userChoiceAsInt int
@@ -369,7 +374,7 @@ func main() {
 			for companyCounter := 0; companyCounter < len(firebountyJSON.Pgms); companyCounter++ {
 				fcompany := strings.ToLower(firebountyJSON.Pgms[companyCounter].Name)
 				if strings.Contains(fcompany, company) {
-					matchingCompanyList = append(matchingCompanyList, []string{strconv.Itoa(companyCounter), firebountyJSON.Pgms[companyCounter].Name})
+					matchingCompanyList = append(matchingCompanyList, firebountySearchMatch{companyCounter, firebountyJSON.Pgms[companyCounter].Name})
 				}
 			}
 			if len(matchingCompanyList) == 0 && !chainMode {
@@ -386,7 +391,7 @@ func main() {
 					//For every matchingCompanyList item...
 					for i := 0; i < len(matchingCompanyList)-1; i++ {
 						//Print it
-						fmt.Println("    " + strconv.Itoa(i) + " - " + matchingCompanyList[i][1])
+						fmt.Println("    " + strconv.Itoa(i) + " - " + matchingCompanyList[i].companyName)
 					}
 
 					//Show user the option to combine all of the previous companies as if they were a single company
@@ -409,29 +414,25 @@ func main() {
 				//tip
 				fmt.Println("[-] If you want to remove one of these options, feel free to modify your firebounty database: " + firebountyJSONPath + "\n")
 
-				firebountyQueryReturnedResults := false
-
 				//If the user chose to "COMBINE ALL"...
 				if userChoiceAsInt == len(matchingCompanyList) {
 					//for every company that matched the company query...
 					for i := 0; i < len(matchingCompanyList); i++ {
-						firebountyQueryReturnedResults = true
 
 						//Load the matchingCompanyList 2D slice, and convert the first member from string to integer, and save the company index
-						companyIndex, _ := strconv.Atoi(matchingCompanyList[i][0])
+						companyIndex := matchingCompanyList[i].companyIndex
 						parseCompany(company, firebountyJSON, companyIndex, explicitLevel, outofScopesListFilepath)
 					}
 				} else {
-					firebountyQueryReturnedResults = true
 
 					//Use userChoiceAsInt as an index for the matchingCompanyList 2D slice, and save the company index
-					companyCounter, _ := strconv.Atoi(matchingCompanyList[userChoiceAsInt][0])
+					companyCounter := matchingCompanyList[userChoiceAsInt].companyIndex
 					parseCompany(company, firebountyJSON, companyCounter, explicitLevel, outofScopesListFilepath)
 				}
 
-				if !firebountyQueryReturnedResults && !chainMode {
-					fmt.Print(string(colorRed) + "[-] 0 (lowercase'd) company names contained the string \"" + company + "\"" + string(colorReset) + "\n")
-				}
+			} else {
+				//Only 1 company matched the query
+				parseCompany(company, firebountyJSON, matchingCompanyList[0].companyIndex, explicitLevel, outofScopesListFilepath)
 			}
 
 			//user chose to use their own scope list
