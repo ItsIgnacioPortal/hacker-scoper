@@ -1081,14 +1081,36 @@ func parseCompany(company string, firebountyJSON Firebounty, companyCounter int,
 	if !chainMode {
 		fmt.Print("[+] Search for \"" + company + "\" matched the company " + string(colorGreen) + firebountyJSON.Pgms[companyCounter].Name + string(colorReset) + "!\n")
 
-		if verboseMode {
-			myjson, err := json.MarshalIndent(firebountyJSON.Pgms[companyCounter], "", "\t")
-			if err != nil {
-				crash("Unable to unmarshal firebountyJSON into myjson. Try disabling verbose mode.", err)
-			}
-			fmt.Println("[+] This is the JSON object that matched " + company + ": ")
-			fmt.Println(string(myjson))
+		// Print the details of the matched company in a readable format
+
+		// Get the last date the cached database was updated
+		info, err := os.Stat(firebountyJSONPath)
+		if err != nil {
+			crash("Error getting file information for the database file at "+firebountyJSONFilename, err)
 		}
+		// info.Atime_ns now contains the last access time
+		// (in nanoseconds since the unix epoch)
+		// Convert the date to the format YYYY-MM-DD HH:MM
+		lastUpdated := time.Unix(info.ModTime().Unix(), 0).Format("2006-01-02 15:04:05")
+		fmt.Println("[+] Last updated: " + lastUpdated)
+
+		// Print the details of the matched company in a readable format
+		fmt.Println("[+] Firebounty URL: " + firebountyJSON.Pgms[companyCounter].Firebounty_url)
+		fmt.Println("[+] Program URL: " + firebountyJSON.Pgms[companyCounter].Url)
+
+		// Print the in-scope rules
+		fmt.Println("[+] In-scope rules: ")
+		for _, inscope := range firebountyJSON.Pgms[companyCounter].Scopes.In_scopes {
+			fmt.Println("\t[+] " + inscope.Scope_type + ": " + inscope.Scope)
+		}
+
+		// Print the out-of-scope rules
+		fmt.Println("\n[+] Out-of-scope rules: ")
+		for _, noscope := range firebountyJSON.Pgms[companyCounter].Scopes.Out_of_scopes {
+			fmt.Println("\t[+] " + noscope.Scope_type + ": " + noscope.Scope)
+		}
+
+		fmt.Println("\n[+] Analysis started...")
 
 	}
 	//for every scope in the program
