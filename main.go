@@ -1086,7 +1086,7 @@ func parseCompany(company string, firebountyJSON Firebounty, companyCounter int,
 			if err != nil {
 				crash("Unable to unmarshal firebountyJSON into myjson. Try disabling verbose mode.", err)
 			}
-			fmt.Println("[+] This is the JSON object that matched lifeomic: ")
+			fmt.Println("[+] This is the JSON object that matched " + company + ": ")
 			fmt.Println(string(myjson))
 		}
 
