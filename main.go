@@ -373,7 +373,8 @@ func main() {
 				}
 			}
 			if len(matchingCompanyList) == 0 && !chainMode {
-				fmt.Print(string(colorRed) + "[-] 0 (lowercase'd) company names contained the string \"" + company + "\"" + string(colorReset) + "\n")
+				fmt.Println(string(colorRed) + "[-] 0 (lowercase'd) company names contained the string \"" + company + "\"" + string(colorReset))
+				fmt.Println(string(colorRed) + "[-] Consider doing a manual search at https://firebounty.com, or loading the scopes manually into '.inscope' and '.noscope' files.")
 			} else if len(matchingCompanyList) > 1 {
 
 				if chainMode {
