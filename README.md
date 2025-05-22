@@ -1,16 +1,12 @@
 <div align="center"><img src="icon/icon_v2_universal.png" alt ="Hacker-scoper icon"></div>
-
+<br>
 <p align="center">
-  <a href="https://github.com/ItsIgnacioPortal/hacker-scoper/actions/workflows/gorelease.yml">
-    <img src="https://github.com/ItsIgnacioPortal/hacker-scoper/actions/workflows/gorelease.yml/badge.svg">
-  </a>
+  <a href="https://github.com/ItsIgnacioPortal/hacker-scoper/actions/workflows/gorelease.yml"><img src="https://github.com/ItsIgnacioPortal/hacker-scoper/actions/workflows/gorelease.yml/badge.svg"></a>
+  <a href="https://go.dev"><img alt="Golang icon" src="https://img.shields.io/badge/Built_with-GoLang-00acd7?logo=go"></a>
+  <a href="https://github.com/ItsIgnacioPortal/Hacker-Scoper/releases"><img alt="Link to the latest version" src="https://img.shields.io/github/v/release/itsignacioportal/hacker-scoper"></a>
+  <a href="LICENSE.md"><img alt="Badge depicting the proyect license, the aGPLv3" src="https://img.shields.io/badge/License-aGPLv3-663366?logo=GNU"></a>
 </p>
 
-<p align="center">
-  <img src="https://forthebadge.com/images/badges/made-with-go.svg">
-  <img src="https://forthebadge.com/images/badges/built-with-love.svg">
-  <img src="/icon/licensed-with-agpl-v3.svg">
-</p>
 
 ---
 
