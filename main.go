@@ -345,7 +345,7 @@ func main() {
 			}
 
 			//open json
-			jsonFile, err := os.Open(firebountyJSONPath)
+			jsonFile, err := os.Open(firebountyJSONPath) // #nosec G304 -- firebountyJSONPath is a CLI argument specified by the user running the program. It is not unsafe to allow them to open any file in their own system.
 			if err != nil {
 				crash("Couldn't open firebounty JSON. Maybe run \"chmod 777 "+firebountyJSONPath+"\"? ", err)
 			}
