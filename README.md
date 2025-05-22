@@ -31,15 +31,17 @@ Hacker-Scoper is a GoLang tool designed to assist cybersecurity professionals in
 choco install hacker-scoper
 ```
 
-**Using go install**
+**From the releases page**
+
+Download a pre-built binary from [the releases page](https://github.com/ItsIgnacioPortal/hacker-scoper/releases)
+
+**Download the latest version (BETA, may or may not work)**
 
 ```
 go install github.com/ItsIgnacioPortal/hacker-scoper
 ```
 
-**From the releases page**
 
-Download a pre-built binary from [the releases page](https://github.com/ItsIgnacioPortal/hacker-scoper/releases)
 <br>
 ## 🎥 Demos
 
