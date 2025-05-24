@@ -413,7 +413,10 @@ func main() {
 
 					//Get userchoice
 					fmt.Print("\n[+] Multiple companies matched \"" + company + "\". Please choose one: ")
-					fmt.Scanln(&userChoice)
+					_, err = fmt.Scanln(&userChoice)
+					if err != nil {
+						crash("An error ocurred while reading user input.", err)
+					}
 
 					//Convert userchoice str -> int
 					userChoiceAsInt, err = strconv.Atoi(userChoice)
