@@ -470,8 +470,14 @@ func main() {
 				for scopesScanner.Scan() {
 					parseScopesWrapper(scopesScanner.Text(), explicitLevel, targetsListFile, outofScopesListFilepath, nil)
 				}
-				scopesFile.Close()
-				targetsListFile.Close()
+				err = scopesFile.Close()
+				if err != nil {
+					crash("Couldn't close '"+scopesListFilepath+"'. The file was already closed.", err)
+				}
+				err = targetsListFile.Close()
+				if err != nil {
+					crash("Couldn't close '"+scopesListFilepath+"'. The file was already closed.", err)
+				}
 
 			} else if errors.Is(err, os.ErrNotExist) {
 				//path/to/whatever does not exist
