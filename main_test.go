@@ -42,3 +42,10 @@ func Test_removePortFromHost(t *testing.T) {
 	value := removePortFromHost(testURL)
 	equals(t, "example.com", value)
 }
+
+func Test_removeDuplicateStr(t *testing.T) {
+	// testSlice must be a slice of strings with duplicates
+	testSlice := []string{"a", "b", "a", "c", "b"}
+	value := removeDuplicateStr(testSlice)
+	equals(t, []string{"a", "b", "c"}, value)
+}

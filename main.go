@@ -1088,6 +1088,7 @@ func logUnsure(url string) {
 	unsureURLs = append(inscopeURLs, url)
 }
 
+// Receives a slice of strings and returns a new slice with duplicates removed
 func removeDuplicateStr(strSlice []string) []string {
 	allKeys := make(map[string]bool)
 	list := []string{}
