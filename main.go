@@ -64,6 +64,7 @@ type firebountySearchMatch struct {
 
 var chainMode bool
 var targetsListFilepath string
+var targetsListFile *os.File
 var includeUnsure bool
 
 const colorReset = "\033[0m"
@@ -241,15 +242,12 @@ func main() {
 		crash("Invalid explicit-level selected", err)
 	}
 
-	//overwrite whathever was feeded to targetsListFilepath with the stdin input
+	// If we're getting input from stdin...
 	//https://stackoverflow.com/a/26567513/11490425
 	stat, _ := os.Stdin.Stat()
 	if (stat.Mode()&os.ModeCharDevice) == 0 && !isVSCodeDebug() {
-		// data is being piped to stdin
 
 		var stdinInput string
-
-		tmpFile := createFile("hacker-scoper_stdin_scopes_tmp-file.txt", os.TempDir())
 
 		//read stdin
 		scanner := bufio.NewScanner(os.Stdin)
@@ -260,22 +258,38 @@ func main() {
 			crash("bufio couldn't read stdin correctly.", err)
 		}
 
-		//write to disk
-		err := os.WriteFile(os.TempDir()+"/hacker-scoper_stdin_scopes_tmp-file.txt", []byte(stdinInput), 0666)
+		// Write to disk in a securely-generated temporary file (CWE-377)
+		//os.CreateTemp(dir, pattern string) (*File, error)
+		secureTempFile, err := os.CreateTemp("", "hacker-scoper_stdin-scopes-tmp-file*.txt")
+		if err != nil {
+			crash("Couldn't create tmp file for storing stdin.", err)
+		}
+		err = os.WriteFile(secureTempFile.Name(), []byte(stdinInput), 0600)
 		if err != nil {
 			crash("Couldn't save write to tmp file.", err)
 		}
 
-		popLine(tmpFile)
-		tmpFile.Close()
+		popLine(secureTempFile)
 
-		targetsListFilepath = os.TempDir() + "/hacker-scoper_stdin_scopes_tmp-file.txt"
 		usedstdin = true
 
-	} //else { //stdin is from a terminal }
+		targetsListFile = secureTempFile
 
-	//clean targetsListFilepath path for +speed
-	targetsListFilepath = filepath.Clean(targetsListFilepath)
+	} else {
+		// We didn't get anything from stdin, so we will use the file specified by the user
+		// Immediatly open the file specified by the user to prevent the file from potentially being modified by another process, exploiting a race condition (CWE-377)
+
+		//clean targetsListFilepath path for +speed
+		targetsListFilepath = filepath.Clean(targetsListFilepath)
+
+		//open the user-supplied URL list
+		var err error
+		targetsListFile, err = os.Open(targetsListFilepath) // #nosec G304 -- targetsListFilepath is a CLI argument specified by the user running the program. It is not unsafe to allow them to open any file in their own system.
+		if err != nil {
+			crash("Could not open your provided URL list file", err)
+		}
+
+	}
 
 	if company == "" && scopesListFilepath == "" {
 		//var err error
@@ -312,9 +326,10 @@ func main() {
 		scopesScanner := bufio.NewScanner(inscopeFileio)
 
 		for scopesScanner.Scan() {
-			parseScopesWrapper(scopesScanner.Text(), explicitLevel, targetsListFilepath, noscopePath, nil)
+			parseScopesWrapper(scopesScanner.Text(), explicitLevel, targetsListFile, noscopePath, nil)
 		}
 		inscopeFileio.Close()
+		targetsListFile.Close()
 
 	} else {
 
@@ -453,9 +468,10 @@ func main() {
 				scopesScanner := bufio.NewScanner(scopesFile)
 
 				for scopesScanner.Scan() {
-					parseScopesWrapper(scopesScanner.Text(), explicitLevel, targetsListFilepath, outofScopesListFilepath, nil)
+					parseScopesWrapper(scopesScanner.Text(), explicitLevel, targetsListFile, outofScopesListFilepath, nil)
 				}
 				scopesFile.Close()
+				targetsListFile.Close()
 
 			} else if errors.Is(err, os.ErrNotExist) {
 				//path/to/whatever does not exist
@@ -547,16 +563,6 @@ func main() {
 
 }
 
-// path must not have the end bar (/)
-func createFile(file string, path string) *os.File {
-	outputFile, err := os.Create(path + "/" + file) // #nosec G304 -- path is os.TempDir(), which is a safe location to write to.
-	if err != nil {
-		panic(err)
-	}
-
-	return outputFile
-}
-
 // https://stackoverflow.com/a/30948278/11490425
 func popLine(f *os.File) ([]byte, error) {
 	fi, err := f.Stat()
@@ -640,7 +646,7 @@ func updateFireBountyJSON() {
 // 192.168.0.1/24
 // 192.168.0.1
 // 192.168.0.1/24
-func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outofScopesListFilepath string, firebountyOutOfScopes []Scope, parseScopeAsRegex bool) {
+func parseScopes(scope string, isWilcard bool, targetsListFile *os.File, outofScopesListFilepath string, firebountyOutOfScopes []Scope, parseScopeAsRegex bool) {
 	schemedScope := "http://" + scope
 
 	var CIDR *net.IPNet
@@ -671,15 +677,9 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 		scope = strings.Replace(scope, "*", ".*", -1)
 	}
 
-	//open the user-supplied URL list
-	file, err := os.Open(targetsListFilepath) // #nosec G304 -- targetsListFilepath is a CLI argument specified by the user running the program. It is not unsafe to allow them to open any file in their own system.
-	if err != nil {
-		crash("Could not open your provided URL list file", err)
-	}
-
 	//Read the URLs file line per line
 	//scan using bufio
-	scanner := bufio.NewScanner(file)
+	scanner := bufio.NewScanner(targetsListFile)
 
 	for scanner.Scan() {
 		//attempt to parse current target as an IP
@@ -832,14 +832,12 @@ func parseScopes(scope string, isWilcard bool, targetsListFilepath string, outof
 
 	}
 
-	file.Close()
-
 	if err := scanner.Err(); err != nil {
 		crash("Could not read URL List file successfully", err)
 	}
 }
 
-func parseScopesWrapper(scope string, explicitLevel int, targetsListFilepath string, outofScopesListFilepath string, firebountyOutOfScopes []Scope) {
+func parseScopesWrapper(scope string, explicitLevel int, targetsListFile *os.File, outofScopesListFilepath string, firebountyOutOfScopes []Scope) {
 
 	//if we have a wildcard domain
 	if strings.HasPrefix(scope, "*.") {
@@ -847,18 +845,18 @@ func parseScopesWrapper(scope string, explicitLevel int, targetsListFilepath str
 		if explicitLevel != 3 && strings.Count(scope, "*") == 1 {
 			//remove wildcard ("*.")
 			scope = strings.ReplaceAll(scope, "*.", "")
-			parseScopes(scope, true, targetsListFilepath, outofScopesListFilepath, firebountyOutOfScopes, false)
+			parseScopes(scope, true, targetsListFile, outofScopesListFilepath, firebountyOutOfScopes, false)
 		}
 
 		//if the scope is in a weird wildcard format, containing more than one wildcard...
 	} else if strings.Contains(scope, "*") {
-		parseScopes(scope, true, targetsListFilepath, outofScopesListFilepath, firebountyOutOfScopes, true)
+		parseScopes(scope, true, targetsListFile, outofScopesListFilepath, firebountyOutOfScopes, true)
 	} else if explicitLevel == 1 {
 		//this is NOT a wildcard domain, but we'll treat it as such anyway
-		parseScopes(scope, true, targetsListFilepath, outofScopesListFilepath, firebountyOutOfScopes, false)
+		parseScopes(scope, true, targetsListFile, outofScopesListFilepath, firebountyOutOfScopes, false)
 	} else {
 		//this is NOT a wildcard domain. we will parse it explicitly
-		parseScopes(scope, false, targetsListFilepath, outofScopesListFilepath, firebountyOutOfScopes, false)
+		parseScopes(scope, false, targetsListFile, outofScopesListFilepath, firebountyOutOfScopes, false)
 	}
 }
 
@@ -1139,7 +1137,7 @@ func parseCompany(company string, firebountyJSON Firebounty, companyCounter int,
 				}
 			}
 
-			parseScopesWrapper(scope, explicitLevel, targetsListFilepath, outofScopesListFilepath, firebountyJSON.Pgms[companyCounter].Scopes.Out_of_scopes)
+			parseScopesWrapper(scope, explicitLevel, targetsListFile, outofScopesListFilepath, firebountyJSON.Pgms[companyCounter].Scopes.Out_of_scopes)
 
 		}
 	}
