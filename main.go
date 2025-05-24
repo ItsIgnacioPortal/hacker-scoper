@@ -269,7 +269,10 @@ func main() {
 			crash("Couldn't save write to tmp file.", err)
 		}
 
-		popLine(secureTempFile)
+		_, err = popLine(secureTempFile)
+		if err != nil {
+			crash("An unknown error ocurred while reading the temporary file for processing the stdin input.", err)
+		}
 
 		usedstdin = true
 
@@ -328,8 +331,15 @@ func main() {
 		for scopesScanner.Scan() {
 			parseScopesWrapper(scopesScanner.Text(), explicitLevel, targetsListFile, noscopePath, nil)
 		}
-		inscopeFileio.Close()
-		targetsListFile.Close()
+		err = inscopeFileio.Close()
+		if err != nil {
+			crash("Couldn't close '"+inscopePath+"'. The file was already closed.", err)
+		}
+
+		err = targetsListFile.Close()
+		if err != nil {
+			crash("Couldn't close '"+targetsListFilepath+"'. The file was already closed.", err)
+		}
 
 	} else {
 
@@ -367,7 +377,7 @@ func main() {
 
 			//read the json file as bytes
 			byteValue, _ := ioutil.ReadAll(jsonFile)
-			jsonFile.Close()
+			jsonFile.Close() // #nosec G104 -- No need to worry about double-closing issues, as the file is closed right after reading it.
 
 			var firebountyJSON Firebounty
 			err = json.Unmarshal(byteValue, &firebountyJSON)
