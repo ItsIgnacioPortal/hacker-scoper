@@ -563,7 +563,7 @@ func main() {
 		}
 
 		//Close the output file
-		f.Close()
+		f.Close() // #nosec G104 -- There's no harm done if we're unable to close the output file, since we're already at the end of the program.
 	}
 	cleanup()
 
@@ -625,13 +625,13 @@ func updateFireBountyJSON() {
 
 	//read the contents of the request
 	body, err := ioutil.ReadAll(jason.Body)
-	jason.Body.Close()
+	jason.Body.Close() // #nosec G104 -- There is no situation in which closing the body of the request will cause an error.
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	//delete the previous file (if it even exists)
-	os.Remove(firebountyJSONPath)
+	os.Remove(firebountyJSONPath) // #nosec G104 -- There is no need to handle any errors in deleting the file, as it will be created again in the next step.
 
 	//write to disk
 	err = os.WriteFile(firebountyJSONPath, []byte(string(body)), 0600)
