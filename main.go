@@ -219,7 +219,7 @@ func main() {
 			_, err := os.Stat(firebountyJSONPath)
 			if errors.Is(err, os.ErrNotExist) {
 				//Create the folder
-				err := os.Mkdir(firebountyJSONPath, os.ModePerm)
+				err := os.Mkdir(firebountyJSONPath, 0600)
 				if err != nil {
 					crash("Unable to create the folder \""+firebountyJSONPath+"\"", err)
 				}
@@ -628,7 +628,7 @@ func updateFireBountyJSON() {
 	os.Remove(firebountyJSONPath)
 
 	//write to disk
-	err = os.WriteFile(firebountyJSONPath, []byte(string(body)), 0666)
+	err = os.WriteFile(firebountyJSONPath, []byte(string(body)), 0600)
 	if err != nil {
 		crash("Couldn't save firebounty json to disk as"+firebountyJSONPath, err)
 	}
