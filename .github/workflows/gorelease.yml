@@ -19,15 +19,15 @@ jobs:
         name: set up Go
         uses: actions/setup-go@v2
         with:
-          go-version: 1.17.2
+          go-version: 1.24.3
       -
         run: cd ${{ github.workspace }}/.. && wget https://raw.githubusercontent.com/ItsIgnacioPortal/hacker-scoper/main/.github/.goreleaser.yml && pwd
       -
         name: run GoReleaser
-        uses: goreleaser/goreleaser-action@v2.4.1
+        uses: goreleaser/goreleaser-action@v2.9.0
         with:
           version: latest
-          args: release --rm-dist --config ${{ github.workspace }}/../.goreleaser.yml
+          args: release --clean --config ${{ github.workspace }}/../.goreleaser.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
 
