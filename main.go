@@ -1072,9 +1072,10 @@ func cleanup() {
 	if usedstdin {
 		//Developers using temporary files are expected to clean up after themselves.
 		//https://superuser.com/a/296827
-		err := os.Remove(targetsListFilepath)
+		_ = targetsListFile.Close()
+		err := os.Remove(targetsListFile.Name())
 		if err != nil {
-			fmt.Fprintf(os.Stderr, string(colorRed)+"[ERROR]: Unable to delete the temporary file at '"+targetsListFilepath+"'. Access permissions to this system's temp folder might have changed since the program started running. Make sure to delete the file manually to avoid clutter in your temp directory."+string(colorReset)+"\n")
+			fmt.Fprintf(os.Stderr, string(colorRed)+"[ERROR]: Unable to delete the temporary file at '"+targetsListFile.Name()+"'. Access permissions to this system's temp folder might have changed since the program started running. Make sure to delete the file manually to avoid clutter in your temp directory."+string(colorReset)+"\n")
 			panic(err)
 		}
 	}
