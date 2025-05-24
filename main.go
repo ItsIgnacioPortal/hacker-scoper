@@ -8,7 +8,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"net/url"
@@ -376,7 +375,7 @@ func main() {
 			}
 
 			//read the json file as bytes
-			byteValue, _ := ioutil.ReadAll(jsonFile)
+			byteValue, _ := io.ReadAll(jsonFile)
 			jsonFile.Close() // #nosec G104 -- No need to worry about double-closing issues, as the file is closed right after reading it.
 
 			var firebountyJSON Firebounty
@@ -637,7 +636,7 @@ func updateFireBountyJSON() {
 	}
 
 	//read the contents of the request
-	body, err := ioutil.ReadAll(jason.Body)
+	body, err := io.ReadAll(jason.Body)
 	jason.Body.Close() // #nosec G104 -- There is no situation in which closing the body of the request will cause an error.
 	if err != nil {
 		fmt.Println(err)
