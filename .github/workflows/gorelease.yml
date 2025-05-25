@@ -55,3 +55,9 @@ jobs:
         uses: crazy-max/ghaction-chocolatey@v2
         with:
           args: pack choco\hacker-scoper\hacker-scoper.nuspec
+      - 
+        name: Upload to chocolatey
+        run: |
+          FOR /F "tokens=* USEBACKQ" %%F IN (`dir /B *.nupkg`) DO (SET filename=%%F)
+          ECHO %filename%
+          choco push %filename% --source "'https://push.chocolatey.org/'" --api-key "'${{ secrets.CHOCOLATEY_API_KEY }}'"
