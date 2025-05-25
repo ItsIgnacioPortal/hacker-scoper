@@ -1,4 +1,4 @@
-name: Run Gosec - Go Security Checker
+name: GoSec Security Checker
 on:
   push:
     branches:
