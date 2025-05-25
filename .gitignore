@@ -18,3 +18,5 @@ todo.txt
 test.txt
 a.txt
 external.txt
+# Added by goreleaser init:
+dist/
