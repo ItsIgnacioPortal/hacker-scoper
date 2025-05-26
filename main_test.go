@@ -62,6 +62,12 @@ func Test_parseOutOfScopes(t *testing.T) {
 	assetURL, _ = url.Parse("https://zendesk.internal.example.com")
 	outOfScopeString = "https://sometool.internal.example.com"
 	value = parseOutOfScopes(assetURL, outOfScopeString, nil)
+	equals(t, false, value)
+
+	// Simple test - out-of-scope URL with a URL-like out-of-scope string
+	assetURL, _ = url.Parse("https://zendesk.internal.example.com")
+	outOfScopeString = "https://zendesk.internal.example.com"
+	value = parseOutOfScopes(assetURL, outOfScopeString, nil)
 	equals(t, true, value)
 
 	// Test with a bad function invocation, providing both an assetURL and an assetIP
