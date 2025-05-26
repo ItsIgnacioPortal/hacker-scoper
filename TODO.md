@@ -3,6 +3,7 @@
 - [x] Add **Allow user to select a company when there's multiple matches for the same company name**
 - [ ] Comply with [OpenSSF Best Practices](https://www.bestpractices.dev)
 - [ ] Reduce executable filesize using compiler flags
+- [ ] Make goreleaser not include a copy of the LICENSE and README with every release build. That's just bloat, nobody needs to download that.
 - [ ] Add **BBaaS API private program scope query**: If a company wasn't found on firebounty, ask the user for an API key. REFERENCE: https://github.com/root4loot/rescope#features
 
 	"Do you want to add a HackerOne API Key to get private bug-bounty program scopes? ([Yes]/No/Later): "
