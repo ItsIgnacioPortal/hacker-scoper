@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net"
 	"net/url"
 	"path/filepath"
 	"reflect"
@@ -43,6 +44,46 @@ func equals(tb testing.TB, exp, act interface{}) {
 //========================================================================
 //========================================================================
 //========================================================================
+
+func Test_parseOutOfScopes(t *testing.T) {
+	// Simple test (inscope)
+	assetURL, _ := url.Parse("https://example.com")
+	outOfScopeString := "zendesk*.example.com"
+	value := parseOutOfScopes(assetURL, outOfScopeString, nil)
+	equals(t, false, value)
+
+	// Simple test (out of scope)
+	assetURL, _ = url.Parse("https://zendesk.internal.example.com")
+	outOfScopeString = "zendesk*.example.com"
+	value = parseOutOfScopes(assetURL, outOfScopeString, nil)
+	equals(t, true, value)
+
+	// Test with a bad function invocation, providing both an assetURL and an assetIP
+	// Only the assetURL should be used in this case
+	assetURL, _ = url.Parse("https://zendesk.internal.example.com")
+	outOfScopeString = "zendesk*.example.com"
+	assetIP := net.ParseIP("127.0.0.1")
+	value = parseOutOfScopes(assetURL, outOfScopeString, assetIP)
+	equals(t, true, value)
+
+	// Test with a bad function invocation, providing both assetURL and assetIP as nil
+	// The function should return false
+	assetURL = nil
+	outOfScopeString = "127.0.0.1"
+	assetIP = nil
+	value = parseOutOfScopes(assetURL, outOfScopeString, assetIP)
+	equals(t, false, value)
+}
+
+func Example_parseOutOfScopes() {
+	// Test with an invalid out-of-scope string
+	// In context, this function would print a warning to stderr and return false
+	// However, for testing purposes, we will just check the stederr output
+	assetURL, _ := url.Parse("https://example.com")
+	outOfScopeString := "this-protocol-is-not-valid://example.com.org.net.us:87587349"
+	_ = parseOutOfScopes(assetURL, outOfScopeString, nil)
+	// Output: Couldn't parse out-of-scope "this-protocol-is-not-valid://example.com.org.net.us:87587349" as a URL.
+}
 
 func Test_removePortFromHost(t *testing.T) {
 	// testURL must be in a variable of type *url.URL, which contains "https://example.com:8080/path?query=123"
