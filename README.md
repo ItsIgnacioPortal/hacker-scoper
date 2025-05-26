@@ -18,7 +18,7 @@ Hacker-Scoper is a GoLang tool designed to assist cybersecurity professionals in
 - **Automatic scope detection**: Hacker-Scoper maintains an automatically-updated cached database of public program scopes. This means you don't need to manually specify the program scope unless the bug bounty program is private. You just need to supply the company name (`-c company-name-here`).
 - **Easy customization**: You can load the scope of any private program scopes into files named `.inscope` and `.noscope` for inscope assets, and out-of-scope assets respectively.
 - **Match any asset**: Hacker-Scoper works with IPv4, IPv6, and any URL format (including non-conventional ones like `sql://` or `redis://`).
-- **Wildcard support**: Hacker-Scoper supports wildcards in any part of your scope, allowing you to use filters like `amzn*.example.com` and `dev.*.example.com`. You can also use CIDR ranges to define your scope for IP addresses, for example: `192.168.2.1/24`, and `FE80::0204:B3FF::/24`.
+- **Wildcard support**: Hacker-Scoper supports wildcards in any part of your scope, allowing you to use filters like `amzn*.example.com` and `dev.*.example.com`.
 - **Automation friendly**: Use the `-ch`/`--chain-mode` argument to disable the fancy text decorations and output only the in-scope assets.
 - **Compatible**: Hacker-Scoper is compatible with Windows, Linux, MacOS and Android in all architectures.
 - **Flexible**: For any companies with vaguely defined scopes, you can enable or disable scope wildcard parsing using the command-line argument `-e`/`--explicit-level`.
@@ -112,10 +112,8 @@ Custom .inscope file example:
 *.sub.domain.example.com
 amzn*.domain.example.com
 192.168.1.10
-192.168.2.1/24
 FE80:0000:0000:0000:0202:B3FF:FE1E:8329
 FE80::0202:B3FF:FE1E:8329
-FE80::0204:B3FF::/24
 ```
 
 Custom .noscope file example:
