@@ -969,6 +969,10 @@ func isOutOfScope(targetURL *url.URL, outofScopesListFilepath string, targetIP n
 	return false
 }
 
+// Returns true if the targetURL is out of scope, false otherwise
+// Only targetURL or targetIP should be non-nil
+// If both are specified, targetURL will be used
+// If both are nil, the function will return false
 func parseOutOfScopes(targetURL *url.URL, outOfScope string, targetIP net.IP) bool {
 
 	if targetURL != nil {
