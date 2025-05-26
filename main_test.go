@@ -46,15 +46,21 @@ func equals(tb testing.TB, exp, act interface{}) {
 //========================================================================
 
 func Test_parseOutOfScopes(t *testing.T) {
-	// Simple test (inscope)
+	// Simple test - inscope URL
 	assetURL, _ := url.Parse("https://example.com")
 	outOfScopeString := "zendesk*.example.com"
 	value := parseOutOfScopes(assetURL, outOfScopeString, nil)
 	equals(t, false, value)
 
-	// Simple test (out of scope)
+	// Simple test - out of scope URL
 	assetURL, _ = url.Parse("https://zendesk.internal.example.com")
 	outOfScopeString = "zendesk*.example.com"
+	value = parseOutOfScopes(assetURL, outOfScopeString, nil)
+	equals(t, true, value)
+
+	// Simple test - in-scope URL with a URL-like out-of-scope string
+	assetURL, _ = url.Parse("https://zendesk.internal.example.com")
+	outOfScopeString = "https://sometool.internal.example.com"
 	value = parseOutOfScopes(assetURL, outOfScopeString, nil)
 	equals(t, true, value)
 
