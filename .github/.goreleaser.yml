@@ -6,7 +6,9 @@ before:
     - go mod tidy
 
 archives:
-  - formats: [tar.gz]
+  - format: gz
+    files:
+      - none*
     # this name template makes the OS and Arch compatible with the results of `uname`.
     name_template: >-
       {{ .ProjectName }}_
@@ -19,6 +21,8 @@ archives:
     format_overrides:
       - goos: windows
         formats: [zip]
+        files:
+          - none*
 
 changelog:
   disabled: true
