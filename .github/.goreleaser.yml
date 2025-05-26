@@ -23,7 +23,7 @@ archives:
         formats: [zip]
 
 changelog:
-  disabled: true
+  disable: true
 
 release:
   footer: >-
