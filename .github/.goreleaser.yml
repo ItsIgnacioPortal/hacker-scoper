@@ -33,24 +33,24 @@ release:
     Released by [GoReleaser](https://github.com/goreleaser/goreleaser).
 
 builds:
-- env:
-  - CGO_ENABLED=0
-  # GOOS list to build for.
-  # For more info refer to: https://golang.org/doc/install/source#environment
-  # Defaults are darwin and linux.
   - ldflags:
     - -s -w
-  goos:
-    - linux
-    - windows
-    - darwin
-    - freebsd
+    env:
+    - CGO_ENABLED=0
+    # GOOS list to build for.
+    # For more info refer to: https://golang.org/doc/install/source#environment
+    # Defaults are darwin and linux.
+    goos:
+      - linux
+      - windows
+      - darwin
+      - freebsd
 
-  # GOARCH to build for.
-  # For more info refer to: https://golang.org/doc/install/source#environment
-  # Defaults are 386, amd64 and arm64.
-  goarch:
-    - amd64
-    - arm
-    - arm64
-    - "386"
+    # GOARCH to build for.
+    # For more info refer to: https://golang.org/doc/install/source#environment
+    # Defaults are 386, amd64 and arm64.
+    goarch:
+      - amd64
+      - arm
+      - arm64
+      - "386"
