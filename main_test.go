@@ -9,6 +9,10 @@ import (
 	"testing"
 )
 
+//========================================================================
+//                            HELPER FUNCTIONS
+//========================================================================
+
 // assert fails the test if the condition is false.
 func assert(tb testing.TB, condition bool, msg string, v ...interface{}) {
 	if !condition {
@@ -35,6 +39,10 @@ func equals(tb testing.TB, exp, act interface{}) {
 		tb.FailNow()
 	}
 }
+
+//========================================================================
+//========================================================================
+//========================================================================
 
 func Test_removePortFromHost(t *testing.T) {
 	// testURL must be in a variable of type *url.URL, which contains "https://example.com:8080/path?query=123"
