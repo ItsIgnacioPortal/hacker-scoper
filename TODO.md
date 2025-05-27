@@ -21,7 +21,6 @@
 - [X] Put the usage options in a fancy table on the README.
 - [ ] Add fully automated chocolatey releases
 - [ ] If the company name didn't match firebounty, nor any BBaaS platform scope, attempt to get the scope using an ASN
-- [ ] Improve the _Attempt to scrape security.txt files from your targets_ feature
 - [ ] Add **Combine private and public scopes**
 - [ ] Add **Resolves conflicting includes/excludes**
-- [ ] Add **Define multiple inscopes sources and combine them**
+- [ ] Add **Define multiple inscopes sources and combine them** (such as combining the detected company scope with the manual scopes from .inscope files)
