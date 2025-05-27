@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net"
+	"net/http"
 	"net/url"
 	"path/filepath"
 	"reflect"
@@ -114,6 +115,34 @@ func Example_parseOutOfScopes() {
 
 	fmt.Println(out)
 	// Output: [33m[WARNING]: Couldn't parse out-of-scope "[38;2;0;204;255mhttps://[33mthis is not even close to a URL" as a URL.[0m
+}
+
+func Test_updateFireBountyJSON(t *testing.T) {
+	// This test just verifies if the firebountyAPIURL is still available online, and if the JSON it returns still matches the expected structure.
+	// firebountyAPIURL is a global variable defined in the main package.
+	// First, we test if the URL is reachable with a HEAD request.
+	fmt.Println(firebountyAPIURL)
+	resp, err := http.Head("https://firebounty.com/api/v1/scope/all/url_only/")
+	// if error is not nil and the response body has more than 1 byte, we fail the test.
+	if err != nil || resp == nil || resp.ContentLength < 1 {
+		t.Fatalf("Failed to reach firebounty API URL: %v", err)
+	} else {
+		// If the HEAD request is successful, we proceed to test the JSON structure.
+		// We can use a simple HTTP GET request to fetch the JSON.
+		resp, err = http.Get(firebountyAPIURL)
+		checkForErrors(t, err)
+		defer resp.Body.Close()
+
+		// We can check if the Content-Type is application/json
+		if resp.Header.Get("Content-Type") != "application/json" {
+			t.Fatalf("Expected Content-Type application/json, got %s", resp.Header.Get("Content-Type"))
+		}
+
+		// We can also check if the response body is not empty
+		if resp.ContentLength == 0 {
+			t.Fatal("Expected non-empty response body")
+		}
+	}
 }
 
 func Test_removePortFromHost(t *testing.T) {
