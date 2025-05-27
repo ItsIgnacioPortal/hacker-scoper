@@ -1022,16 +1022,21 @@ func parseOutOfScopes(targetURL *url.URL, outOfScope string, targetIP net.IP) bo
 			if schemeRegex.MatchString(outOfScope) {
 				// Parse it as it is
 				outOfScopeURL, err = url.Parse(outOfScope)
+				if err != nil {
+					if !chainMode {
+						warning("Couldn't parse out-of-scope \"" + outOfScope + "\" as a URL.")
+					}
+					return false
+				}
 			} else {
 				// Add a scheme to it so it can be parsed as a URL
 				outOfScopeURL, err = url.Parse("https://" + outOfScope)
-			}
-
-			if err != nil {
-				if !chainMode {
-					warning("Couldn't parse out-of-scope \"" + outOfScope + "\" as a URL.")
+				if err != nil {
+					if !chainMode {
+						warning("Couldn't parse out-of-scope \"" + colorBlue + "https://" + colorYellow + outOfScope + "\" as a URL.")
+					}
+					return false
 				}
-				return false
 			}
 
 			if removePortFromHost(targetURL) == outOfScopeURL.Host {

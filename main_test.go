@@ -8,6 +8,8 @@ import (
 	"reflect"
 	"runtime"
 	"testing"
+
+	"github.com/zenizh/go-capturer"
 )
 
 //========================================================================
@@ -104,9 +106,14 @@ func Example_parseOutOfScopes() {
 	// In context, this function would print a warning to stderr and return false
 	// However, for testing purposes, we will just check the stederr output
 	assetURL, _ := url.Parse("https://example.com")
-	outOfScopeString := "this-protocol-is-not-valid://example.com.org.net.us:87587349"
-	_ = parseOutOfScopes(assetURL, outOfScopeString, nil)
-	// Output: Couldn't parse out-of-scope "this-protocol-is-not-valid://example.com.org.net.us:87587349" as a URL.
+	outOfScopeString := "this is not even close to a URL"
+
+	out := capturer.CaptureStderr(func() {
+		_ = parseOutOfScopes(assetURL, outOfScopeString, nil)
+	})
+
+	fmt.Println(out)
+	// Output: [33m[WARNING]: Couldn't parse out-of-scope "[38;2;0;204;255mhttps://[33mthis is not even close to a URL" as a URL.[0m
 }
 
 func Test_removePortFromHost(t *testing.T) {
