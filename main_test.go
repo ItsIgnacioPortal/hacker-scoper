@@ -70,6 +70,18 @@ func Test_parseOutOfScopes(t *testing.T) {
 	value = parseOutOfScopes(assetURL, outOfScopeString, nil)
 	equals(t, true, value)
 
+	// Test - in-scope URL with a URL-like out-of-scope string with an unusual scheme
+	assetURL, _ = url.Parse("https://zendesk.internal.example.com")
+	outOfScopeString = "mongodb://sometool.internal.example.com"
+	value = parseOutOfScopes(assetURL, outOfScopeString, nil)
+	equals(t, false, value)
+
+	// Test - out-of-scope URL with a URL-like out-of-scope string with an unusual scheme
+	assetURL, _ = url.Parse("https://zendesk.internal.example.com")
+	outOfScopeString = "mongodb://zendesk.internal.example.com"
+	value = parseOutOfScopes(assetURL, outOfScopeString, nil)
+	equals(t, true, value)
+
 	// Test with a bad function invocation, providing both an assetURL and an assetIP
 	// Only the assetURL should be used in this case
 	assetURL, _ = url.Parse("https://zendesk.internal.example.com")

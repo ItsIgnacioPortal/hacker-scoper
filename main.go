@@ -1012,13 +1012,28 @@ func parseOutOfScopes(targetURL *url.URL, outOfScope string, targetIP net.IP) bo
 				return true
 			}
 		} else {
-			outOfScopeURL, err := url.Parse("https://" + outOfScope)
+			// The scope has no wildcards
+
+			var outOfScopeURL *url.URL
+			var err error
+
+			schemeRegex, _ := regexp.Compile(`^\w+:`)
+			//if the outofscope starts with a scheme...
+			if schemeRegex.MatchString(outOfScope) {
+				// Parse it as it is
+				outOfScopeURL, err = url.Parse(outOfScope)
+			} else {
+				// Add a scheme to it so it can be parsed as a URL
+				outOfScopeURL, err = url.Parse("https://" + outOfScope)
+			}
+
 			if err != nil {
 				if !chainMode {
 					warning("Couldn't parse out-of-scope \"" + outOfScope + "\" as a URL.")
 				}
 				return false
 			}
+
 			if removePortFromHost(targetURL) == outOfScopeURL.Host {
 				return true
 
